@@ -1,8 +1,8 @@
 import "./App.css";
-import Header from './components/custom/Header';
-import Footer from './components/custom/Footer';
-import LandingPage from './components/custom/LandingPage';
-import HomePage from './components/custom/HomePage';
+import Header from './components/Custom/Header';
+import Footer from './components/Custom/Footer';
+import LandingPage from './components/Custom/LandingPage';
+import HomePage from './components/Custom/HomePage';
 import { Routes, Route } from "react-router-dom";
 function App() {
   return (
