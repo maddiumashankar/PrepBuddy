@@ -1,8 +1,9 @@
 import "./App.css";
-import Header from './components/Custom/Header';
-import Footer from './components/Custom/Footer';
-import LandingPage from './components/Custom/LandingPage';
-import HomePage from './components/Custom/HomePage';
+import Header from "./components/Custom/Header";
+import Footer from "./components/Custom/Footer";
+import LandingPage from "./components/Custom/LandingPage";
+import HomePage from "./components/Custom/HomePage";
+import TestPage from "./components/Custom/TestPage";
 import { Routes, Route } from "react-router-dom";
 function App() {
   return (
@@ -10,9 +11,8 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<LandingPage />} />
-      </Routes>
-      <Routes>
         <Route path="/homepage" element={<HomePage />} />
+        <Route path="/testpage" element={<TestPage />} />
       </Routes>
       <Footer />
     </div>

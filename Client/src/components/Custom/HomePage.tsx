@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
               ].map((company) => (
                 <div
                   key={company}
-                  className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-700 transition "
+                  className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
                 >
                   <h3 className="text-xl font-semibold mb-3">{company}</h3>
                   <p className="text-gray-300 mb-4">

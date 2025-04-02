@@ -1,12 +1,23 @@
-import { Link } from "react-router-dom";
 import BackgroundBeamsWithCollision from "../ui/background-beams-with-collision";
-import React from "react";
+import React, { useEffect} from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import TextGenerateEffect from "../ui/text-generate-effect";
 import TypewriterEffect from "../ui/typewriter-effect";
+import { auth } from "../../firebase/firebaseConfig";
+import {
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
 const LandingPage: React.FC = () => {
   const handleLogin = async () => {};
+  const provider = new GoogleAuthProvider();
+  const navigate = useNavigate();
+  // const [loading, setLoading] = useState(false);
+
   useGSAP(() => {
     gsap.from("#box", {
       duration: 1,
@@ -15,7 +26,34 @@ const LandingPage: React.FC = () => {
       yoyo: true,
       ease: "sine.inOut",
     });
-  });
+  }, []);
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setLoading(false);
+  //   }, 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
+  
+
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log("User Info:", result.user);
+      navigate("/homepage");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Auth state changed:", currentUser);
+      if (currentUser) {
+        navigate("/homepage");
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, navigate]);
 
   const GoogleLoginButton = ({ className = "", variant = "default" }) => (
     <button
@@ -125,6 +163,18 @@ const LandingPage: React.FC = () => {
         "Receive detailed feedback and suggestions to improve your interview performance.",
     },
   ];
+  // if (loading) {
+  //   return (
+  //     <>
+  //       <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
+  //         <div className="flex flex-col items-center">
+  //           <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
+  //           <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+  //         </div>
+  //       </div>
+  //     </>
+  //   );
+  // }
 
   return (
     <div className="min-h-screen flex flex-col w-full">
@@ -151,45 +201,29 @@ const LandingPage: React.FC = () => {
                 className="text-xl font-thin text-gray-500"
                 words="Master technical and aptitude questions while practicing real-time interviews with our AI assistant."
               />
-              <Link
-                to="/homepage"
+              <div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+                onClick={() => {
+                  handleGoogleLogin();
+                }}
               >
                 <GoogleLoginButton className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg text-lg cursor-pointer" />
-
-                {/* <button className="border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors py-2 px-6 rounded-lg text-lg flex items-center group">
-                  Learn more
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M14 5l7 7m0 0l-7 7m7-7H3"
-                    />
-                  </svg>
-                </button> */}
-              </Link>
+              </div>
             </div>
 
             <div className="relative" id="box">
-              <div className="bg-indigo-700  p-6 rounded-xl shadow-xl">
-                <div className="mb-4 rounded-lg bg-gray-100 p-4">
-                  <p className="font-medium text-gray-800">
+              <div className="bg-black p-6 rounded-xl shadow-xl border border-indigo-600">
+                <div className="mb-4 rounded-lg bg-indigo-600 p-4">
+                  <p className="font-medium text-white">
                     Aptitude Test Session
                   </p>
                 </div>
                 <div className="space-y-4 mb-4">
-                  <div className="bg-gray-100 p-4 rounded-lg">
-                    <p className="font-medium text-gray-800 mb-2">
+                  <div className="bg-gray-900 p-4 rounded-lg">
+                    <p className="font-medium text-indigo-300 mb-2">
                       Question 3 of 10:
                     </p>
-                    <p className="text-gray-800">
+                    <p className="text-gray-300">
                       If a train travels at a speed of 60 km/hr and crosses a
                       platform in 30 seconds, what is the length of the
                       platform?
@@ -197,31 +231,31 @@ const LandingPage: React.FC = () => {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center">
-                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0"></div>
-                      <p>300 meters</p>
+                      <div className="w-5 h-5 rounded-full border-2 border-gray-500 mr-3 flex-shrink-0"></div>
+                      <p className="text-gray-300">300 meters</p>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0"></div>
-                      <p>400 meters</p>
+                      <div className="w-5 h-5 rounded-full border-2 border-gray-500 mr-3 flex-shrink-0"></div>
+                      <p className="text-gray-300">400 meters</p>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-5 h-5 rounded-full border-2 border-indigo-600 bg-indigo-100 mr-3 flex-shrink-0"></div>
-                      <p className="font-medium">500 meters</p>
+                      <div className="w-5 h-5 rounded-full border-2 border-indigo-500 bg-indigo-600 mr-3 flex-shrink-0"></div>
+                      <p className="font-medium text-white">500 meters</p>
                     </div>
                     <div className="flex items-center">
-                      <div className="w-5 h-5 rounded-full border-2 border-gray-300 mr-3 flex-shrink-0"></div>
-                      <p>600 meters</p>
+                      <div className="w-5 h-5 rounded-full border-2 border-gray-500 mr-3 flex-shrink-0"></div>
+                      <p className="text-gray-300">600 meters</p>
                     </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <button className="text-gray-300 hover:text-gray-400 cursor-pointer">
+                  <button className="text-indigo-400 hover:text-indigo-300 cursor-pointer">
                     Previous
                   </button>
                   <div className="text-xs text-gray-400">
                     Time remaining: 1:45
                   </div>
-                  <button className="text-gray-300 font-medium hover:text-gray-4 cursor-pointer">
+                  <button className="text-indigo-400 font-medium hover:text-indigo-300 cursor-pointer">
                     Next
                   </button>
                 </div>
@@ -309,7 +343,12 @@ const LandingPage: React.FC = () => {
               ))}
             </div>
 
-            <div className="mt-12 text-center">
+            <div
+              className="mt-12 text-center "
+              onClick={() => {
+                handleGoogleLogin();
+              }}
+            >
               <GoogleLoginButton className="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-8 rounded-lg text-lg cursor-pointer" />
             </div>
           </div>
