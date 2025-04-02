@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Carousel,
   CarouselContent,
@@ -96,6 +96,8 @@ const TestPage = () => {
   const [isTestSubmitted, setIsTestSubmitted] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(1);
 
+  const nextRef = useRef<HTMLButtonElement>(null);
+  const prevRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (currentTime <= 0 || isTestSubmitted) return;
     const timer = setInterval(() => {
@@ -156,6 +158,23 @@ const TestPage = () => {
     setCurrentSlide(newValue);
     console.log(newValue); // Logs the correct upcoming value
   };
+
+  const changeSlide = (targetIndex: number) => {
+    if (targetIndex + 1 > currentSlide) {
+      for (let i = currentSlide; i < targetIndex + 1; i++) {
+        nextRef.current?.click();
+      }
+    } else if (targetIndex + 1 < currentSlide) {
+      for (let i = currentSlide; i > targetIndex + 1; i--) {
+        prevRef.current?.click();
+      }
+    } else {
+      return;
+    }
+    const newValue = targetIndex + 1;
+    setCurrentSlide(newValue);
+  };
+
   return (
     <div className="min-h-screen bg-gray-900 text-white w-full">
       {/* Header */}
@@ -181,7 +200,7 @@ const TestPage = () => {
           <div className="flex items-center">
             <div className="bg-gray-700 px-4 py-2 rounded-md flex items-center">
               <svg
-                className="h-5 w-5 mr-2 text-indigo-600"
+                className="h-5 w-5 mr-2 text-indigo-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -199,7 +218,6 @@ const TestPage = () => {
         </div>
       </header>
 
-      {/* Progress bar */}
       <div className="bg-gray-800 py-2 px-4">
         <div className="container mx-auto">
           <div className="flex items-center justify-between mb-1">
@@ -264,13 +282,17 @@ const TestPage = () => {
             ))}
           </CarouselContent>
           <div className="flex justify-between items-center mt-6">
-            <div
+            <button
+              disabled={currentSlide <= 1}
               onClick={() => {
                 decrementSlideNo();
               }}
             >
-              <CarouselPrevious className="relative left-0 right-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer" />
-            </div>
+              <CarouselPrevious
+                className="relative left-0 right-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer"
+                ref={prevRef}
+              />
+            </button>
             <button
               onClick={handleSubmitTest}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -278,13 +300,18 @@ const TestPage = () => {
             >
               Submit Test
             </button>
-            <div
+
+            <button
+              disabled={currentSlide === 10}
               onClick={() => {
                 incrementSlideNo();
               }}
             >
-              <CarouselNext className="relative right-0 left-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer" />
-            </div>
+              <CarouselNext
+                className="relative right-0 left-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer"
+                ref={nextRef}
+              />
+            </button>
           </div>
         </Carousel>
 
@@ -300,6 +327,9 @@ const TestPage = () => {
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-800 text-gray-300 border border-gray-700"
                 } cursor-pointer hover:bg-gray-700`}
+                onClick={() => {
+                  changeSlide(index);
+                }}
               >
                 {index + 1}
               </button>
