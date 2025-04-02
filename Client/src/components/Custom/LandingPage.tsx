@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import BackgroundBeamsWithCollision from "../ui/background-beams-with-collision";
-const LandingPage = () => {
+import React from "react";
+
+const LandingPage: React.FC = () => {
   const handleLogin = async () => {};
 
   const GoogleLoginButton = ({ className = "", variant = "default" }) => (

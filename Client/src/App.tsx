@@ -1,9 +1,9 @@
 import "./App.css";
-import Header from "./components/custom/Header";
+import Header from './components/custom/Header';
+import Footer from './components/custom/Footer';
+import LandingPage from './components/custom/LandingPage';
+import HomePage from './components/custom/HomePage';
 import { Routes, Route } from "react-router-dom";
-import Footer from "./components/custom/Footer";
-import LandingPage from "./components/custom/LandingPage";
-import HomePage from "./components/custom/HomePage";
 function App() {
   return (
     <div className="w-full min-h-[100vh] h-auto bg-gradient-to-r from-gray-900 to-gray-800 flex flex-col justify-between items-center text-white">

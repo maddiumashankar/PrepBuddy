@@ -1,9 +1,11 @@
-const Footer = () => {
+import React from 'react';
+
+const Footer: React.FC = () => {
   return (
     <div className='w-full p-3 bg-black text-white flex justify-center'>
       &copy; 2025 PrepBuddy. All rights reserved.
     </div>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

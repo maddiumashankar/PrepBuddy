@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-const HomePage = () => {
+const HomePage: React.FC = () => {
   const [testType, setTestType] = useState<"predefined" | "custom">(
     "predefined"
   );
