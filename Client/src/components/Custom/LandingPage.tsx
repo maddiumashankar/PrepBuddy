@@ -1,9 +1,21 @@
 import { Link } from "react-router-dom";
 import BackgroundBeamsWithCollision from "../ui/background-beams-with-collision";
 import React from "react";
-
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import TextGenerateEffect from "../ui/text-generate-effect";
+import TypewriterEffect from "../ui/typewriter-effect";
 const LandingPage: React.FC = () => {
   const handleLogin = async () => {};
+  useGSAP(() => {
+    gsap.from("#box", {
+      duration: 1,
+      y: 5,
+      repeat: -1,
+      yoyo: true,
+      ease: "sine.inOut",
+    });
+  });
 
   const GoogleLoginButton = ({ className = "", variant = "default" }) => (
     <button
@@ -121,13 +133,24 @@ const LandingPage: React.FC = () => {
         <div className="container mx-auto px-4 py-20 md:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-500 leading-tight">
-                Ace Your Next Interview with AI-Powered Practice
-              </h1>
-              <p className="text-xl text-gray-500">
-                Master technical and aptitude questions while practicing
-                real-time interviews with our AI assistant.
-              </p>
+              <TypewriterEffect
+                className="text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-500 leading-tight"
+                words={[
+                  { text: "Ace" },
+                  { text: "Your" },
+                  { text: "Next" },
+                  { text: "Aptitute" },
+                  { text: "Test" },
+                  { text: "With" },
+                  { text: "AI-Powered" },
+                  { text: "Practice" },
+                ]}
+              />
+
+              <TextGenerateEffect
+                className="text-xl font-thin text-gray-500"
+                words="Master technical and aptitude questions while practicing real-time interviews with our AI assistant."
+              />
               <Link
                 to="/homepage"
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
@@ -154,7 +177,7 @@ const LandingPage: React.FC = () => {
               </Link>
             </div>
 
-            <div className="relative">
+            <div className="relative" id="box">
               <div className="bg-indigo-700  p-6 rounded-xl shadow-xl">
                 <div className="mb-4 rounded-lg bg-gray-100 p-4">
                   <p className="font-medium text-gray-800">

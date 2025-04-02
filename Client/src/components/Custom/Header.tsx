@@ -1,9 +1,21 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import React from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+
 const Header: React.FC = () => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  useGSAP(() => {
+    gsap.from(".boxy", {
+      opacity:0,
+      duration: 0.5,
+      y: 50,
+      stagger:0.4,
+    });
+  });
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -54,16 +66,16 @@ const Header: React.FC = () => {
     <>
       {location.pathname === "/" ? (
         <div
-          className={`sticky top-0 z-50 w-full transition-all duration-200 ${"bg-white shadow-md"} invert`}
+          className={`sticky top-0 z-50 w-full transition-all duration-200 ${"bg-white shadow-md"} invert overflow-y-hidden`}
         >
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <Link to="/" className="flex items-center">
-              <h1 className="text-2xl font-bold text-black">PrepBuddy</h1>
+              <h1 className="boxy text-2xl font-bold text-black">PrepBuddy</h1>
             </Link>
-            <nav className="hidden md:flex space-x-8 items-center">
+            <nav className="boxy hidden md:flex space-x-8 items-center">
               <a
                 href="#features"
-                className="text-gray-800 hover:text-indigo-600 transition"
+                className=" text-gray-800 hover:text-indigo-600 transition"
               >
                 Features
               </a>
@@ -73,7 +85,7 @@ const Header: React.FC = () => {
               >
                 How It Works
               </a>
-              <GoogleLoginButton className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer bg-indigo-600 invert" />
+              <GoogleLoginButton className="boxy px-4 py-2 rounded-lg text-sm font-medium cursor-pointer bg-indigo-600 invert" />
             </nav>
             <div className="md:hidden">
               <GoogleLoginButton className="px-3 py-1.5 text-sm rounded-lg invert bg-indigo-600" />
@@ -83,7 +95,7 @@ const Header: React.FC = () => {
       ) : (
         <header className="bg-black shadow-md w-full">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div className="flex items-center">
+            <div className="flex items-center cursor-pointer">
               <span className="text-2xl font-bold">PrepBuddy</span>
             </div>
 
@@ -129,6 +141,9 @@ const Header: React.FC = () => {
                     <Link
                       to="/"
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400"
+                      onClick={() => {
+                        setIsDropdownOpen(!isDropdownOpen);
+                      }}
                     >
                       Logout
                     </Link>

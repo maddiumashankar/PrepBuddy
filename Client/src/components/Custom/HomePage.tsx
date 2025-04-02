@@ -42,7 +42,7 @@ const HomePage: React.FC = () => {
 
   return (
     <div>
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-6">
         <h1 className="text-3xl font-bold mb-8 text-center">
           Welcome to Aptitude Testing Platform
         </h1>
@@ -84,7 +84,7 @@ const HomePage: React.FC = () => {
               ].map((company) => (
                 <div
                   key={company}
-                  className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-700 transition cursor-pointer"
+                  className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-700 transition "
                 >
                   <h3 className="text-xl font-semibold mb-3">{company}</h3>
                   <p className="text-gray-300 mb-4">
