@@ -85,8 +85,8 @@ const Header: React.FC = () => {
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
             <Link to="/" className="flex items-center">
               <h1 className="boxy text-2xl font-bold text-black invert flex items-center justify-center gap-1">
-                <img src="public/icon.png" alt="icon" width={35} />
-                <img src="public/logo.png" alt="logo" width={150} />
+                <img src="icon.png" alt="icon" width={35} />
+                <img src="logo.png" alt="logo" width={150} />
               </h1>
             </Link>
             <nav className="boxy hidden md:flex space-x-8 items-center">
