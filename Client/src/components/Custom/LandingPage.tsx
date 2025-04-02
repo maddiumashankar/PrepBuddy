@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+import BackgroundBeamsWithCollision from "../ui/background-beams-with-collision";
 const LandingPage = () => {
   const handleLogin = async () => {};
 
@@ -112,19 +114,22 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <section className="relative flex-grow flex items-center bg-zinc-800 h-[95vh]">
+      <BackgroundBeamsWithCollision className="relative flex-grow flex items-center bg-zinc-900 min-h-[90vh] h-auto">
         <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-white -z-10"></div>
         <div className="container mx-auto px-4 py-20 md:py-32">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-500 leading-tight">
                 Ace Your Next Interview with AI-Powered Practice
               </h1>
               <p className="text-xl text-gray-500">
                 Master technical and aptitude questions while practicing
                 real-time interviews with our AI assistant.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                to="/homepage"
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              >
                 <GoogleLoginButton className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg text-lg cursor-pointer" />
 
                 {/* <button className="border border-indigo-600 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-colors py-2 px-6 rounded-lg text-lg flex items-center group">
@@ -144,11 +149,11 @@ const LandingPage = () => {
                     />
                   </svg>
                 </button> */}
-              </div>
+              </Link>
             </div>
 
             <div className="relative">
-              <div className="bg-black p-6 rounded-xl shadow-xl">
+              <div className="bg-indigo-700  p-6 rounded-xl shadow-xl">
                 <div className="mb-4 rounded-lg bg-gray-100 p-4">
                   <p className="font-medium text-gray-800">
                     Aptitude Test Session
@@ -185,13 +190,13 @@ const LandingPage = () => {
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <button className="text-gray-500 hover:text-indigo-600">
+                  <button className="text-gray-300 hover:text-gray-400 cursor-pointer">
                     Previous
                   </button>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs text-gray-400">
                     Time remaining: 1:45
                   </div>
-                  <button className="text-indigo-600 font-medium hover:text-indigo-700">
+                  <button className="text-gray-300 font-medium hover:text-gray-4 cursor-pointer">
                     Next
                   </button>
                 </div>
@@ -199,7 +204,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </BackgroundBeamsWithCollision>
 
       <section id="features" className="py-20 bg-white invert">
         <div className="container mx-auto px-4">
@@ -232,7 +237,7 @@ const LandingPage = () => {
         </div>
       </section>
 
-      <section id="how-it-works" className="py-20 bg-gray-50 bg-zinc-800  ">
+      <section id="how-it-works" className="py-20  bg-zinc-900  ">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-200 mb-4">
@@ -285,7 +290,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
     </div>
   );
 };

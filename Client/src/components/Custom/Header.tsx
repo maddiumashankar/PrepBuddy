@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
-
+import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 const Header = () => {
+  const location = useLocation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const GoogleLoginButton = ({ className = "", variant = "default" }) => (
     <button
       className={`
@@ -43,39 +50,95 @@ const Header = () => {
     </button>
   );
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-all duration-200 ${"bg-white shadow-md"} invert`}
-    >
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        <Link to="/" className="flex items-center">
-          <h1 className="text-2xl font-bold text-gray-800">PrepBuddy</h1>
-        </Link>
-        <nav className="hidden md:flex space-x-8 items-center">
-          <a
-            href="#features"
-            className="text-gray-800 hover:text-indigo-600 transition"
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="text-gray-800 hover:text-indigo-600 transition"
-          >
-            How It Works
-          </a>
-          <GoogleLoginButton
-            variant="outline"
-            className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer"
-          />
-        </nav>
-        <div className="md:hidden">
-          <GoogleLoginButton
-            variant="outline"
-            className="px-3 py-1.5 text-sm rounded-lg"
-          />
+    <>
+      {location.pathname === "/" ? (
+        <div
+          className={`sticky top-0 z-50 w-full transition-all duration-200 ${"bg-white shadow-md"} invert`}
+        >
+          <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+            <Link to="/" className="flex items-center">
+              <h1 className="text-2xl font-bold text-black">PrepBuddy</h1>
+            </Link>
+            <nav className="hidden md:flex space-x-8 items-center">
+              <a
+                href="#features"
+                className="text-gray-800 hover:text-indigo-600 transition"
+              >
+                Features
+              </a>
+              <a
+                href="#how-it-works"
+                className="text-gray-800 hover:text-indigo-600 transition"
+              >
+                How It Works
+              </a>
+              <GoogleLoginButton className="px-4 py-2 rounded-lg text-sm font-medium cursor-pointer bg-indigo-600 invert" />
+            </nav>
+            <div className="md:hidden">
+              <GoogleLoginButton className="px-3 py-1.5 text-sm rounded-lg invert bg-indigo-600" />
+            </div>
+          </div>
         </div>
-      </div>
-    </header>
+      ) : (
+        <header className="bg-black shadow-md w-full">
+          <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div className="flex items-center">
+              <span className="text-2xl font-bold">PrepBuddy</span>
+            </div>
+
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md transition cursor-pointer"
+              >
+                <div className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center"></div>
+                <span>User Name</span>
+                <svg
+                  className={`h-4 w-4 transition-transform ${
+                    isDropdownOpen ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {isDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10">
+                  <div className="py-1">
+                    <Link
+                      to="/previous-tests"
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                    >
+                      Previous Tests
+                    </Link>
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                    >
+                      Profile Settings
+                    </Link>
+                    <Link
+                      to="/"
+                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400"
+                    >
+                      Logout
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </header>
+      )}
+    </>
   );
 };
 
