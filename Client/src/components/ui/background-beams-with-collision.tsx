@@ -1,7 +1,7 @@
 "use client";
 import { cn } from "../../../lib/utils";
 import { motion, AnimatePresence } from "motion/react";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, RefObject } from "react";
 
 const BackgroundBeamsWithCollision = ({
   children,
@@ -79,8 +79,8 @@ const BackgroundBeamsWithCollision = ({
         <CollisionMechanism
           key={beam.initialX + "beam-idx"}
           beamOptions={beam}
-          containerRef={containerRef}
-          parentRef={parentRef}
+          containerRef={containerRef as RefObject<HTMLDivElement>}
+          parentRef={parentRef as RefObject<HTMLDivElement>}
         />
       ))}
 
@@ -131,12 +131,12 @@ const CollisionMechanism = React.forwardRef<
       if (
         beamRef.current &&
         containerRef.current &&
-        parentRef.current &&
+        parentRef.current && 
         !cycleCollisionDetected
       ) {
         const beamRect = beamRef.current.getBoundingClientRect();
         const containerRect = containerRef.current.getBoundingClientRect();
-        const parentRect = parentRef.current.getBoundingClientRect();
+        const parentRect = parentRef.current.getBoundingClientRect(); 
 
         if (beamRect.bottom >= containerRect.top) {
           const relativeX =
@@ -158,7 +158,7 @@ const CollisionMechanism = React.forwardRef<
     const animationInterval = setInterval(checkCollision, 50);
 
     return () => clearInterval(animationInterval);
-  }, [cycleCollisionDetected, containerRef]);
+  }, [cycleCollisionDetected, containerRef, parentRef]);
 
   useEffect(() => {
     if (collision.detected && collision.coordinates) {
