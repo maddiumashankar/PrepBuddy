@@ -32,6 +32,14 @@ router.get("/getuser/:email", async (req, res) => {
   res.send(user);
 });
 
+router.get("/getuser2/:id", async (req, res) => {
+  let user = await userModel.findOne({ _id: req.params.id });
+  if (!user) {
+    return res.status(400).send("User not found");
+  }
+  res.send(user);
+});
+
 module.exports = router;
 // name: {
 //     type: String,

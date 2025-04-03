@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import geminiPrompt from "../../gemini/prompt";
 import { AIchatSession } from "../../gemini/AiModel";
 import questionsData from "../../gemini/sampleSet";
-
 console.log(geminiPrompt);
 const questions = geminiPrompt
   .split("<questions>")[1]
@@ -27,8 +26,10 @@ const answers = geminiPrompt
   .split("*")
   .map((answer) => answer.trim());
 console.log(answers);
-
-const TestPage = () => {
+interface HeaderProps {
+  userID: string;
+}
+const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [currentTime, setCurrentTime] = useState(10 * 60);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
     Array(questions.length).fill(null)
@@ -40,7 +41,6 @@ const TestPage = () => {
   const [geminiOptions, setGeminiOptions] = useState<string[][]>([]);
   const [geminiAnswers, setGeminiAnswers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (currentTime <= 0) return;
     const timer = setInterval(() => {
@@ -59,6 +59,7 @@ const TestPage = () => {
 
   useEffect(() => {
     console.log(geminiQuestions, geminiOptions, geminiAnswers);
+    console.log(userID)
   }, [geminiQuestions, geminiOptions, geminiAnswers]);
 
   const formatTime = (seconds: number) => {
@@ -186,7 +187,10 @@ const TestPage = () => {
 
       <div className="bg-gray-800 py-2 px-4">
         <div className="container mx-auto">
-          <div className="flex items-center justify-between mb-1">
+          <div
+            className="flex items-center justify-between mb-1"
+            onClick={GenerateQuestions}
+          >
             <span className="text-sm text-gray-300">Progress</span>
             <span className="text-sm text-gray-300">
               {userAnswers.filter((ans) => ans !== null).length} /{" "}
@@ -258,18 +262,6 @@ const TestPage = () => {
               />
             </div>
             <div
-              onClick={handleSubmitTest}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Submit Test
-            </div>
-            <div
-              onClick={GenerateQuestions}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              generate
-            </div>
-            <div
               aria-disabled={currentSlide === 10}
               onClick={() => {
                 incrementSlideNo();
@@ -302,6 +294,15 @@ const TestPage = () => {
                 {index + 1}
               </button>
             ))}
+          </div>
+          <div
+            onClick={handleSubmitTest}
+            className="relative w-[120px] mt-6 mx-auto"
+          >
+            <p className=" bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+              {" "}
+              Submit Test
+            </p>
           </div>
         </div>
       </main>

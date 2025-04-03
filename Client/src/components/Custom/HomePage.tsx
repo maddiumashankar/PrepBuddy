@@ -1,27 +1,24 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const HomePage: React.FC = () => {
+interface HeaderProps {
+  userID: string;
+}
+
+const HomePage: React.FC<HeaderProps> = ({ userID }) => {
   const [testType, setTestType] = useState<"predefined" | "custom">(
     "predefined"
   );
+  const [userName, setUserName] = useState();
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     difficulty: "medium",
     duration: 60,
     questionCount: 20,
   });
-
-
-  //   const handleLogout = async () => {
-  //     try {
-  //       await signOut();
-  //       toast.success("Logged out successfully!");
-  //     } catch (error) {
-  //       console.error("Logout error:", error);
-  //       toast.error("Failed to logout. Please try again.");
-  //     }
-  //   };
+  console.log("ID in Homepage:", userID);
 
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -40,12 +37,43 @@ const HomePage: React.FC = () => {
     toast.success("Test created! Redirecting to test page...");
     console.log("Test configuration:", formData);
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/register/getuser2/${userID}`,
+          { withCredentials: true }
+        );
+        console.log("Server Response (Name):", response.data.name);
+        setUserName(response.data.name);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchData();
+  }, [userID]);
+
+  if (loading) {
+    return (
+      <>
+        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
+            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
     <div>
       <main className="container mx-auto px-4 py-6">
         <h1 className="text-3xl font-bold mb-8 text-center">
-          Welcome to Aptitude Testing Platform
+          Welcome <span className="text-indigo-500">{userName}</span> to
+          PrepBuddy! Get ready to test your skills!
         </h1>
 
         {/* Test Selection Tabs */}

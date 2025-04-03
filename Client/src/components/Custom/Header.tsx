@@ -7,7 +7,12 @@ import { auth } from "../../firebase/firebaseConfig";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import axios from "axios";
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  setUserID: React.Dispatch<React.SetStateAction<string>>;
+  userID: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -15,13 +20,14 @@ const Header: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
-
+  
+  console.log("ID from header:",userID);
+  
   const handleLogout = async () => {
     setLoading(true);
     try {
       await signOut(auth);
       setLoading(false);
-      console.log("User logged out");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -44,6 +50,7 @@ const Header: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser);
       setEmail(currentUser?.email || "");
+      setUserID("")
       if (!currentUser) {
         navigate("/");
       }
@@ -60,6 +67,7 @@ const Header: React.FC = () => {
             { withCredentials: true }
           );
           console.log("Server Response:", response.data);
+          setUserID(response.data._id || "");
           setUser(response.data.name || "");
           setProfilePic(response.data.profilepic || "");
           setEmail(response.data.email || "");
@@ -128,7 +136,7 @@ const Header: React.FC = () => {
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md transition cursor-pointer"
               >
-                {!profilePic || !user ? (
+                {!profilePic  ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-gray-500 rounded-full animate-pulse"></div>
                     <span className="w-20 h-4 bg-gray-500 rounded-md animate-pulse"></span>
@@ -143,7 +151,7 @@ const Header: React.FC = () => {
                         (e.currentTarget.src = "default-profile.jpg")
                       }
                     />
-                    <span className="max-[368px]:hidden">{user}</span>
+                    <span className="max-[430px]:hidden">{user}</span>
                   </div>
                 )}
 
