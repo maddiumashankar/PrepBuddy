@@ -12,6 +12,7 @@ const HomePage: React.FC = () => {
     questionCount: 20,
   });
 
+
   //   const handleLogout = async () => {
   //     try {
   //       await signOut();

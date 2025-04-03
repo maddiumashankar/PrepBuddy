@@ -1,5 +1,5 @@
 import BackgroundBeamsWithCollision from "../ui/background-beams-with-collision";
-import React, { useEffect} from "react";
+import React, { useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import TextGenerateEffect from "../ui/text-generate-effect";
@@ -11,11 +11,22 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const LandingPage: React.FC = () => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      console.log("Auth state changed:", currentUser);
+      if (currentUser) {
+        navigate("/homepage");
+      }
+    });
+    return () => unsubscribe();
+  }, [auth, navigate]);
+
   const handleLogin = async () => {};
   const provider = new GoogleAuthProvider();
-  const navigate = useNavigate();
   // const [loading, setLoading] = useState(false);
 
   useGSAP(() => {
@@ -33,27 +44,29 @@ const LandingPage: React.FC = () => {
   //   }, 1000);
   //   return () => clearTimeout(timer);
   // }, []);
-  
 
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       console.log("User Info:", result.user);
+      const name = result.user.displayName;
+      const email = result.user.email;
+      const profilepic = result.user.photoURL;
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/register`,
+          { name, email, profilepic },
+          { withCredentials: true }
+        );
+        console.log("Server Response:", response.data);
+      } catch (error) {
+        console.error("Error sending data:", error);
+      }
       navigate("/homepage");
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed:", currentUser);
-      if (currentUser) {
-        navigate("/homepage");
-      }
-    });
-    return () => unsubscribe();
-  }, [auth, navigate]);
 
   const GoogleLoginButton = ({ className = "", variant = "default" }) => (
     <button

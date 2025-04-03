@@ -5,28 +5,16 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { auth } from "../../firebase/firebaseConfig";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import axios from "axios";
 
 const Header: React.FC = () => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
   const [user, setUser] = useState<string>("");
-  const [profilePic, setProfilePic] = useState("default-profile.jpg");
+  const [email, setEmail] = useState<string>("");
+  const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
-
-  // const handleGoogle= async () => {
-  //   setLoading(true);
-  //   try {
-  //     onAuthStateChanged(auth, (currentUser) => {
-  //       if (currentUser) {
-  //         setLoading(false);
-  //       }
-  //     });
-  //   } catch (error) {
-  //     console.error("Login failed:", error);
-  //   }
-  // };
-  // handleGoogle();
 
   const handleLogout = async () => {
     setLoading(true);
@@ -55,14 +43,34 @@ const Header: React.FC = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser);
-      setUser(currentUser?.displayName || "");
-      setProfilePic(currentUser?.photoURL || "");
+      setEmail(currentUser?.email || "");
       if (!currentUser) {
         navigate("/");
       }
     });
     return () => unsubscribe();
   }, [auth, navigate]);
+
+  useEffect(() => {
+    if (email) {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/register/getuser/${email}`,
+            { withCredentials: true }
+          );
+          console.log("Server Response:", response.data);
+          setUser(response.data.name || "");
+          setProfilePic(response.data.profilepic || "");
+          setEmail(response.data.email || "");
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      };
+
+      fetchData();
+    }
+  }, [email, navigate]);
 
   if (loading) {
     return (
@@ -83,7 +91,7 @@ const Header: React.FC = () => {
           className={`sticky top-0 z-50 w-full transition-all duration-200 ${"bg-white shadow-md"} invert overflow-y-hidden`}
         >
           <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/homepage" className="flex items-center">
               <h1 className="boxy text-2xl font-bold text-black invert flex items-center justify-center gap-1">
                 <img src="icon.png" alt="icon" width={35} />
                 <img src="logo.png" alt="logo" width={150} />
@@ -103,15 +111,12 @@ const Header: React.FC = () => {
                 How It Works
               </a>
             </nav>
-            {/* <div className="md:hidden">
-              <GoogleLoginButton className="px-3 py-1.5 text-sm rounded-lg invert bg-indigo-600" />
-            </div> */}
           </div>
         </div>
       ) : (
         <header className="bg-black shadow-md w-full">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/homepage" className="flex items-center">
               <h1 className="boxy text-2xl font-bold text-black flex items-center justify-center gap-1">
                 <img src="icon.png" alt="icon" width={35} />
                 <img src="logo.png" alt="logo" width={150} />
@@ -123,12 +128,25 @@ const Header: React.FC = () => {
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md transition cursor-pointer"
               >
-                <img
-                  src={profilePic}
-                  alt="Profile Picture"
-                  className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center overflow-hidden "
-                />
-                <span className="max-[368px]:hidden">{user}</span>
+                {!profilePic || !user ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="w-8 h-8 bg-gray-500 rounded-full animate-pulse"></div>
+                    <span className="w-20 h-4 bg-gray-500 rounded-md animate-pulse"></span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <img
+                      src={profilePic || "default-profile.jpg"}
+                      alt="Profile Picture"
+                      className="w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center overflow-hidden"
+                      onError={(e) =>
+                        (e.currentTarget.src = "default-profile.jpg")
+                      }
+                    />
+                    <span className="max-[368px]:hidden">{user}</span>
+                  </div>
+                )}
+
                 <svg
                   className={`h-4 w-4 transition-transform ${
                     isDropdownOpen ? "rotate-180" : ""

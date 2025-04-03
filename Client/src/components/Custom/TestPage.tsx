@@ -54,9 +54,12 @@ const TestPage = () => {
         return prevTime - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
-  }, [currentTime]);
+  }, [currentTime, geminiQuestions, geminiOptions, geminiAnswers]);
+
+  useEffect(() => {
+    console.log(geminiQuestions, geminiOptions, geminiAnswers);
+  }, [geminiQuestions, geminiOptions, geminiAnswers]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -138,7 +141,6 @@ const TestPage = () => {
 
       setGeminiAnswers(geminiAns ?? []);
 
-      console.log(geminiQuestions, geminiOptions, geminiAnswers);
       setLoading(false);
     } catch (error) {
       console.error("Error generating summary:", error);
@@ -160,24 +162,7 @@ const TestPage = () => {
     <div className="min-h-screen bg-gray-900 text-white w-full">
       {/* Header */}
       <header className="bg-gray-800 shadow-md">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center">
-            <svg
-              className="h-8 w-8 mr-2 text-indigo-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-            <span className="text-xl font-bold">Aptitude Test</span>
-          </div>
-
+        <div className="container mx-auto px-4 py-3 flex justify-end items-center">
           <div className="flex items-center">
             <div className="bg-gray-700 px-4 py-2 rounded-md flex items-center">
               <svg
@@ -262,16 +247,15 @@ const TestPage = () => {
           </CarouselContent>
           <div className="flex justify-between items-center mt-6">
             <div
-              tabIndex={0}
               aria-disabled={currentSlide <= 1}
               onClick={() => {
-                if (currentSlide > 1) decrementSlideNo();
+                decrementSlideNo();
               }}
-              className={`relative left-0 right-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer ${
-                currentSlide <= 1 ? "opacity-50 cursor-not-allowed" : ""
-              }`}
             >
-              <CarouselPrevious ref={prevRef} />
+              <CarouselPrevious
+                className="relative right-0 left-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer"
+                ref={prevRef}
+              />
             </div>
             <div
               onClick={handleSubmitTest}
@@ -285,7 +269,6 @@ const TestPage = () => {
             >
               generate
             </div>
-
             <div
               aria-disabled={currentSlide === 10}
               onClick={() => {
