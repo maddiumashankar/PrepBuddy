@@ -7,99 +7,42 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { toast } from "sonner";
+import geminiPrompt from "../../gemini/prompt";
+import { AIchatSession } from "../../gemini/AiModel";
+import questionsData from "../../gemini/sampleSet";
 
-const questionsData = [
-  {
-    id: 1,
-    question: "What is the time complexity of binary search?",
-    options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"],
-    correctAnswer: "O(log n)",
-  },
-  {
-    id: 2,
-    question: "Which data structure uses LIFO (Last In First Out)?",
-    options: ["Queue", "Stack", "Linked List", "Tree"],
-    correctAnswer: "Stack",
-  },
-  {
-    id: 3,
-    question: "What does HTML stand for?",
-    options: [
-      "Hyper Text Markup Language",
-      "High Tech Machine Learning",
-      "Home Tool Markup Language",
-      "Hyperlink Text Management Logic",
-    ],
-    correctAnswer: "Hyper Text Markup Language",
-  },
-  {
-    id: 4,
-    question:
-      "Which sorting algorithm has the worst-case time complexity of O(n²)?",
-    options: ["Merge Sort", "Quick Sort", "Bubble Sort", "Heap Sort"],
-    correctAnswer: "Bubble Sort",
-  },
-  {
-    id: 5,
-    question: "What is the output of: console.log(typeof NaN)?",
-    options: ["NaN", "undefined", "number", "object"],
-    correctAnswer: "number",
-  },
-  {
-    id: 6,
-    question: "Which of the following is NOT a JavaScript data type?",
-    options: ["string", "boolean", "character", "object"],
-    correctAnswer: "character",
-  },
-  {
-    id: 7,
-    question: "What does SQL stand for?",
-    options: [
-      "Structured Query Language",
-      "Sequential Question Language",
-      "Standard Query Logic",
-      "System Quality Link",
-    ],
-    correctAnswer: "Structured Query Language",
-  },
-  {
-    id: 8,
-    question: "Which HTTP status code represents 'Not Found'?",
-    options: ["200", "404", "500", "301"],
-    correctAnswer: "404",
-  },
-  {
-    id: 9,
-    question: "What is the correct way to declare a JavaScript variable?",
-    options: ["v myVar;", "variable myVar;", "var myVar;", "int myVar;"],
-    correctAnswer: "var myVar;",
-  },
-  {
-    id: 10,
-    question:
-      "Which of these is NOT a valid way to create a function in JavaScript?",
-    options: [
-      "function myFunc() {}",
-      "const myFunc = function() {}",
-      "const myFunc = () => {}",
-      "function = myFunc() {}",
-    ],
-    correctAnswer: "function = myFunc() {}",
-  },
-];
+console.log(geminiPrompt);
+const questions = geminiPrompt
+  .split("<questions>")[1]
+  .split("*")
+  .map((question) => question.trim());
+console.log(questions);
+const options = geminiPrompt
+  .split("<options>")[1]
+  .split("*")
+  .map((option) => option.trim().split(","));
+console.log(options);
+const answers = geminiPrompt
+  .split("<answers>")[1]
+  .split("*")
+  .map((answer) => answer.trim());
+console.log(answers);
 
 const TestPage = () => {
   const [currentTime, setCurrentTime] = useState(10 * 60);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
-    Array(questionsData.length).fill(null)
+    Array(questions.length).fill(null)
   );
-  const [isTestSubmitted, setIsTestSubmitted] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(1);
-
   const nextRef = useRef<HTMLButtonElement>(null);
   const prevRef = useRef<HTMLButtonElement>(null);
+  const [geminiQuestions, setGeminiQuestions] = useState<string[]>([]);
+  const [geminiOptions, setGeminiOptions] = useState<string[][]>([]);
+  const [geminiAnswers, setGeminiAnswers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
-    if (currentTime <= 0 || isTestSubmitted) return;
+    if (currentTime <= 0) return;
     const timer = setInterval(() => {
       setCurrentTime((prevTime) => {
         if (prevTime <= 1) {
@@ -113,7 +56,7 @@ const TestPage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [currentTime, isTestSubmitted]);
+  }, [currentTime]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -130,33 +73,23 @@ const TestPage = () => {
   };
 
   const handleSubmitTest = () => {
-    if (isTestSubmitted) return;
-
+    console.log(userAnswers);
     const score = userAnswers.reduce((total, answer, index) => {
-      return answer === questionsData[index].correctAnswer ? total + 1 : total;
+      return answer?.trim() === geminiAnswers[index].trim() ? total + 1 : total;
     }, 0);
 
-    const percentage = Math.round((score / questionsData.length) * 100);
+    const percentage = Math.round((score / questions.length) * 100);
 
-    toast.success(
-      `Test submitted! Your score: ${score}/${questionsData.length} (${percentage}%)`
-    );
-    setIsTestSubmitted(true);
-
-    // setTimeout(() => {
-    //   navigate("/dashboard");
-    // }, 3000);
+    console.log(score, percentage, "%");
   };
+
   const incrementSlideNo = () => {
     const newValue = currentSlide + 1;
     setCurrentSlide(newValue);
-    console.log(newValue); // Logs the correct upcoming value
   };
-
   const decrementSlideNo = () => {
     const newValue = currentSlide - 1;
     setCurrentSlide(newValue);
-    console.log(newValue); // Logs the correct upcoming value
   };
 
   const changeSlide = (targetIndex: number) => {
@@ -175,6 +108,54 @@ const TestPage = () => {
     setCurrentSlide(newValue);
   };
 
+  //Calling Gemini
+  const GenerateQuestions = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const result = await AIchatSession.sendMessage(geminiPrompt);
+      const geminiQues =
+        result.response?.candidates?.[0]?.content?.parts?.[0]?.text
+          ?.split("<questions>")[1]
+          .split("*")
+          .map((question) => question.trim());
+
+      setGeminiQuestions(geminiQues ?? []);
+
+      const geminiOps =
+        result.response?.candidates?.[0]?.content?.parts?.[0]?.text
+          ?.split("<options>")[1]
+          .split("*")
+          .map((option) => option.trim().split(","));
+
+      setGeminiOptions(geminiOps ?? []);
+
+      const geminiAns =
+        result.response?.candidates?.[0]?.content?.parts?.[0]?.text
+          ?.split("<answers>")[1]
+          .split("*")
+          .map((answer) => answer.trim());
+
+      setGeminiAnswers(geminiAns ?? []);
+
+      console.log(geminiQuestions, geminiOptions, geminiAnswers);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error generating summary:", error);
+    }
+  };
+  if (loading) {
+    return (
+      <>
+        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
+            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-900 text-white w-full">
       {/* Header */}
@@ -224,7 +205,7 @@ const TestPage = () => {
             <span className="text-sm text-gray-300">Progress</span>
             <span className="text-sm text-gray-300">
               {userAnswers.filter((ans) => ans !== null).length} /{" "}
-              {questionsData.length} answered
+              {questions.length} answered
             </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
@@ -233,7 +214,7 @@ const TestPage = () => {
               style={{
                 width: `${
                   (userAnswers.filter((ans) => ans !== null).length /
-                    questionsData.length) *
+                    questions.length) *
                   100
                 }%`,
               }}
@@ -246,32 +227,30 @@ const TestPage = () => {
       <main className="container mx-auto px-4 py-8">
         <Carousel className="w-full max-w-4xl mx-auto">
           <CarouselContent>
-            {questionsData.map((question, index) => (
-              <CarouselItem key={question.id}>
+            {geminiQuestions.map((question, index) => (
+              <CarouselItem key={index}>
                 <div className="bg-gray-800 rounded-lg p-6 shadow-lg h-full">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-xl font-bold text-indigo-500">
                       Question {index + 1}
                     </h3>
                     <span className="bg-gray-700 px-2 py-1 rounded text-sm">
-                      {index + 1} of {questionsData.length}
+                      {index + 1} of {geminiQuestions.length}
                     </span>
                   </div>
 
-                  <p className="text-lg mb-6">{question.question}</p>
+                  <p className="text-lg mb-6">{question}</p>
 
                   <div className="space-y-3">
-                    {question.options.map((option) => (
+                    {geminiOptions[index].map((option, optionIndex) => (
                       <div
-                        key={option}
+                        key={optionIndex}
                         className={`border border-gray-700 rounded-md p-3 cursor-pointer transition-colors ${
                           userAnswers[index] === option
                             ? "bg-indigo-600 border-indigo-500"
                             : "hover:bg-gray-700"
                         }`}
-                        onClick={() =>
-                          !isTestSubmitted && handleSelectOption(index, option)
-                        }
+                        onClick={() => handleSelectOption(index, option)}
                       >
                         {option}
                       </div>
@@ -282,27 +261,33 @@ const TestPage = () => {
             ))}
           </CarouselContent>
           <div className="flex justify-between items-center mt-6">
-            <button
-              disabled={currentSlide <= 1}
+            <div
+              tabIndex={0}
+              aria-disabled={currentSlide <= 1}
               onClick={() => {
-                decrementSlideNo();
+                if (currentSlide > 1) decrementSlideNo();
               }}
+              className={`relative left-0 right-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer ${
+                currentSlide <= 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             >
-              <CarouselPrevious
-                className="relative left-0 right-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer"
-                ref={prevRef}
-              />
-            </button>
-            <button
+              <CarouselPrevious ref={prevRef} />
+            </div>
+            <div
               onClick={handleSubmitTest}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isTestSubmitted}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Submit Test
-            </button>
+            </div>
+            <div
+              onClick={GenerateQuestions}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              generate
+            </div>
 
-            <button
-              disabled={currentSlide === 10}
+            <div
+              aria-disabled={currentSlide === 10}
               onClick={() => {
                 incrementSlideNo();
               }}
@@ -311,7 +296,7 @@ const TestPage = () => {
                 className="relative right-0 left-auto bg-gray-800 border-gray-700 hover:bg-gray-700 text-white cursor-pointer"
                 ref={nextRef}
               />
-            </button>
+            </div>
           </div>
         </Carousel>
 

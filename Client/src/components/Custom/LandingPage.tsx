@@ -189,7 +189,7 @@ const LandingPage: React.FC = () => {
                   { text: "Ace" },
                   { text: "Your" },
                   { text: "Next" },
-                  { text: "Aptitute" },
+                  { text: "Aptitude" },
                   { text: "Test" },
                   { text: "With" },
                   { text: "AI-Powered" },
