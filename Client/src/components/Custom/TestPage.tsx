@@ -28,6 +28,7 @@ const answers = geminiPrompt
   .split("*")
   .map((answer) => answer.trim());
 console.log(answers);
+
 interface HeaderProps {
   userID: string;
 }
@@ -268,7 +269,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     );
   }
   return (
-    <div className="min-h-screen bg-gray-900 text-white w-full">
+    <div className="min-h-screen bg-gray-900 text-white w-full absolute">
       {/* Header */}
       <header className="bg-gray-800 shadow-md">
         <div className="container mx-auto px-4 py-3 flex justify-end items-center">

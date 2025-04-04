@@ -202,7 +202,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                 )}
               </div>
               <p className="mt-7 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
-                Tier-1 / Product-Based Companies
+                Tier-1 Companies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[

@@ -20,9 +20,9 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
   const [email, setEmail] = useState<string>("");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
-  
-  console.log("ID from header:",userID);
-  
+
+  console.log("ID from header:", userID);
+
   const handleLogout = async () => {
     setLoading(true);
     try {
@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       console.log("Auth state changed:", currentUser);
       setEmail(currentUser?.email || "");
-      setUserID("")
+      setUserID("");
       if (!currentUser) {
         navigate("/");
       }
@@ -59,6 +59,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
   }, [auth, navigate]);
 
   useEffect(() => {
+    setIsDropdownOpen(false);
     if (email) {
       const fetchData = async () => {
         try {
@@ -136,7 +137,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md transition cursor-pointer"
               >
-                {!profilePic  ? (
+                {!profilePic ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-gray-500 rounded-full animate-pulse"></div>
                     <span className="w-20 h-4 bg-gray-500 rounded-md animate-pulse"></span>
@@ -175,17 +176,27 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10">
                   <div className="py-1">
+                    {location.pathname === "/homepage" ? (
+                      <Link
+                        to="/profile"
+                        className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      >
+                        My Profile
+                      </Link>
+                    ) : (
+                      <Link
+                        to="/homepage"
+                        className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      >
+                        Homepage
+                      </Link>
+                    )}
+
                     <Link
                       to="/previous-tests"
                       className="block px-4 py-2 text-sm hover:bg-gray-700"
                     >
                       Previous Tests
-                    </Link>
-                    <Link
-                      to="/profile"
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
-                    >
-                      Profile Settings
                     </Link>
                     <div
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400 cursor-pointer"

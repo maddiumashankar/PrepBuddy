@@ -6,6 +6,7 @@ import HomePage from "./components/Custom/HomePage";
 import TestPage from "./components/Custom/TestPage";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
+import Profile from "./components/Custom/Profile";
 function App() {
   const [userID, setUserId] = useState("");
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/homepage" element={<HomePage userID={userID} />} />
         <Route path="/testpage" element={<TestPage userID={userID} />} />
+        <Route path="/profile" element={<Profile userID={userID} />} />
       </Routes>
       <Footer />
     </div>
