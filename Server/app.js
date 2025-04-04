@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import userMode from "./models/userModel.js";
 import testModel from "./models/testModel.js";
 import registerRouter from "./routes/registerRouter.js";
+import testRouter from "./routes/testRouter.js";
 import cookieParser from "cookie-parser";
 
 dotenv.config();
@@ -27,5 +28,6 @@ app.get("/", (req, res) => {
 });
 
 app.use("/register", registerRouter);
+app.use("/test", testRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -10,7 +10,9 @@ import { toast } from "sonner";
 import geminiPrompt from "../../gemini/prompt";
 import { AIchatSession } from "../../gemini/AiModel";
 import questionsData from "../../gemini/sampleSet";
-console.log(geminiPrompt);
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const questions = geminiPrompt
   .split("<questions>")[1]
   .split("*")
@@ -19,7 +21,7 @@ console.log(questions);
 const options = geminiPrompt
   .split("<options>")[1]
   .split("*")
-  .map((option) => option.trim().split(","));
+  .map((option) => option.trim().split("@"));
 console.log(options);
 const answers = geminiPrompt
   .split("<answers>")[1]
@@ -29,6 +31,7 @@ console.log(answers);
 interface HeaderProps {
   userID: string;
 }
+
 const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [currentTime, setCurrentTime] = useState(10 * 60);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
@@ -41,6 +44,11 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [geminiOptions, setGeminiOptions] = useState<string[][]>([]);
   const [geminiAnswers, setGeminiAnswers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [newPrompt, setNewPrompt] = useState<string>(geminiPrompt);
+  const [confirmation, setConfirmation] = useState(true);
+  const [title, setTitle] = useState<string>("");
+  const [difficulty, setDifficulty] = useState<string>("");
   useEffect(() => {
     if (currentTime <= 0) return;
     const timer = setInterval(() => {
@@ -59,7 +67,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
 
   useEffect(() => {
     console.log(geminiQuestions, geminiOptions, geminiAnswers);
-    console.log(userID)
+    console.log(userID);
   }, [geminiQuestions, geminiOptions, geminiAnswers]);
 
   const formatTime = (seconds: number) => {
@@ -112,12 +120,38 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     setCurrentSlide(newValue);
   };
 
+  useEffect(() => {
+    const fetchTestData = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/test/gettest/${userID}`,
+          { withCredentials: true }
+        );
+        console.log("Server Response (Name):", response.data);
+        const updatedPrompt = geminiPrompt
+          .replace(
+            "for the topic ${topic}",
+            `most frequently asked in ${response.data.title} company`
+          )
+          .replace("${difficulty}", response.data.difficulty);
+        setNewPrompt(updatedPrompt);
+        console.log(newPrompt);
+        setTitle(response.data.title);
+        setDifficulty(response.data.difficulty);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTestData();
+  }, [navigate]);
+
   //Calling Gemini
-  const GenerateQuestions = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const GenerateQuestions = async () => {
     setLoading(true);
     try {
-      const result = await AIchatSession.sendMessage(geminiPrompt);
+      const result = await AIchatSession.sendMessage(newPrompt);
       const geminiQues =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<questions>")[1]
@@ -130,7 +164,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<options>")[1]
           .split("*")
-          .map((option) => option.trim().split(","));
+          .map((option) => option.trim().split("@"));
 
       setGeminiOptions(geminiOps ?? []);
 
@@ -145,15 +179,89 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       setLoading(false);
     } catch (error) {
       console.error("Error generating summary:", error);
+    } finally {
+      setCurrentTime(10 * 60);
+      setLoading(false);
     }
   };
+
+  if (confirmation) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50 backdrop-blur-sm">
+        <div className="bg-gray-900 rounded-3xl shadow-2xl p-10 text-white w-[90%] max-w-lg border border-indigo-500/30 transition-all duration-300">
+          <h1 className="text-3xl font-extrabold mb-6 text-indigo-400 tracking-wide text-center">
+            📋 Test Instructions
+          </h1>
+
+          <ul className="text-left list-disc list-inside space-y-4 text-white text-base leading-relaxed">
+            <li>
+              Company:{" "}
+              <span className="text-indigo-500 font-semibold">{title}</span>
+            </li>
+            <li>
+              Difficulty:{" "}
+              <span className="text-indigo-500 font-semibold">
+                {difficulty}
+              </span>
+            </li>
+            <li>
+              Test duration is{" "}
+              <span className="text-indigo-500 font-semibold">10 minutes</span>.
+            </li>
+            <li>
+              Each correct answer gives{" "}
+              <span className="text-indigo-500 font-semibold">1 point</span>.
+            </li>
+            <li>
+              <span className="text-indigo-500 font-semibold">
+                No negative marking
+              </span>
+              .
+            </li>
+            <li>
+              Attempt{" "}
+              <span className="text-indigo-500 font-semibold">
+                all questions
+              </span>
+              .
+            </li>
+          </ul>
+          <span className="font-semibold text-2xl text-center text-indigo-300 flex justify-center items-center">
+            All The Best
+          </span>
+          <div className="mt-8 flex justify-center gap-6">
+            <button
+              onClick={() => {
+                setConfirmation(false);
+                navigate("/homepage");
+              }}
+              className="bg-red-600 cursor-pointer hover:bg-red-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-red-700/40"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                GenerateQuestions();
+                setConfirmation(false);
+              }}
+              className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-indigo-700/40"
+            >
+              Start Test
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <>
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+            <p className="text-white mt-4 text-lg font-semibold">
+              Generating Questions...
+            </p>
           </div>
         </div>
       </>
@@ -187,10 +295,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
 
       <div className="bg-gray-800 py-2 px-4">
         <div className="container mx-auto">
-          <div
-            className="flex items-center justify-between mb-1"
-            onClick={GenerateQuestions}
-          >
+          <div className="flex items-center justify-between mb-1">
             <span className="text-sm text-gray-300">Progress</span>
             <span className="text-sm text-gray-300">
               {userAnswers.filter((ans) => ans !== null).length} /{" "}

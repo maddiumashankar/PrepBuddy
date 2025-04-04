@@ -41,20 +41,3 @@ router.get("/getuser2/:id", async (req, res) => {
 });
 
 module.exports = router;
-// name: {
-//     type: String,
-//     required: true,
-//   },
-//   email: {
-//     type: String,
-//     required: true,
-//     unique: true,
-//   },
-//   creditsUsed: {
-//     type: Number,
-//     default: 0,
-//   },
-//   maxCredits: {
-//     type: Number,
-//     default: 5,
-//   },
