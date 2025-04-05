@@ -8,7 +8,6 @@ import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Profile from "./components/Custom/Profile";
 import PrevTests from "./components/Custom/PrevTests";
-import ScoreBoard from "./components/Custom/ScoreBoard";
 function App() {
   const [userID, setUserId] = useState("");
   return (
