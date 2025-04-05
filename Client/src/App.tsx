@@ -20,7 +20,7 @@ function App() {
         <Route path="/testpage" element={<TestPage userID={userID} />} />
         <Route path="/profile" element={<Profile userID={userID} />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
-        <Route path="/score-board" element={<ScoreBoard userID={userID} />} />
+        <Route path="/score-board" element={<ScoreBoard/>} />
       </Routes>
       <Footer />
     </div>

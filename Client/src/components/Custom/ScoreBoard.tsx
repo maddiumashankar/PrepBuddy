@@ -11,8 +11,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-const leaderboardData = [
+let leaderboardData = [
   {
     id: 1,
     name: "Alex Johnson",
@@ -116,14 +119,60 @@ const RankBadge = ({ rank }: { rank: number }) => {
   );
 };
 
-interface HeaderProps {
-  userID: string;
-}
+const ScoreBoard: React.FC = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = React.useState(true);
 
-const ScoreBoard: React.FC<HeaderProps> = ({ userID }) => {
-  console.log(userID);
+  useEffect(() => {
+    const fetchLeaderboardData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/register/getTopTen`,
+          { withCredentials: true }
+        );
+        leaderboardData = response.data.map(
+          (
+            user: {
+              name: string;
+              profilepic: string;
+              points: number;
+              testAttended: number;
+            },
+            index: number
+          ) => ({
+            id: index + 1,
+            name: user.name,
+            avatar: user.profilepic,
+            totalPoints: user.points,
+            testsAttended: user.testAttended,
+          })
+        );
+        console.log("Server Response score:", response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLeaderboardData();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <>
+        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
+            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
   return (
-    <Card className="w-full m-2">
+    <Card className="w-full ">
       <CardHeader className="bg-black text-white rounded-lg">
         <CardTitle className="text-center text-2xl">Leaderboard</CardTitle>
       </CardHeader>
@@ -143,11 +192,11 @@ const ScoreBoard: React.FC<HeaderProps> = ({ userID }) => {
                 key={user.id}
                 className={`transition-all duration-300 rounded-xl p-4 ${
                   index === 0
-                    ? "bg-yellow-100 text-yellow-900 hover:bg-yellow-200"
-                    : index === 1
-                    ? "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    : index === 2
                     ? "bg-amber-200 text-amber-900 hover:bg-amber-300"
+                    : index === 1
+                    ? "bg-gray-200 text-gray-800 hover:bg-gray-200"
+                    : index === 2
+                    ? "bg-yellow-100 text-yellow-900 hover:bg-yellow-200"
                     : "bg-black hover:bg-zinc-800"
                 }`}
               >
@@ -164,7 +213,7 @@ const ScoreBoard: React.FC<HeaderProps> = ({ userID }) => {
                           ? "border-gray-400"
                           : index === 2
                           ? "border-amber-700"
-                          : "border-transparent"
+                          : "border-white"
                       }`}
                     >
                       <AvatarImage src={user.avatar} alt={user.name} />

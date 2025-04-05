@@ -105,6 +105,11 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
         if (response.data.badges === 1) {
           userProfileData.badges[1].achieved = true;
         }
+        const response3 = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/register/getRank/${userID}`,
+          { withCredentials: true }
+        );
+        userProfileData.rank = response3.data.rank || 0;
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {

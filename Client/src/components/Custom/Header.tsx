@@ -6,6 +6,11 @@ import gsap from "gsap";
 import { auth } from "../../firebase/firebaseConfig";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import axios from "axios";
+import { CgProfile } from "react-icons/cg";
+import { TiHomeOutline } from "react-icons/ti";
+import { FaRegNoteSticky } from "react-icons/fa6";
+import { IoTrophyOutline } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
 
 interface HeaderProps {
   setUserID: React.Dispatch<React.SetStateAction<string>>;
@@ -178,38 +183,38 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
                   <div className="py-1">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
                     >
-                      My Profile
+                      <CgProfile className="text-xl" /> My Profile
                     </Link>
 
                     <Link
                       to="/homepage"
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
                     >
-                      Homepage
+                      <TiHomeOutline className="text-xl" /> Homepage
                     </Link>
 
                     <Link
                       to="/previous-tests"
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
                     >
-                      Previous Tests
+                      <FaRegNoteSticky className="text-xl" /> Previous Tests
                     </Link>
                     <Link
                       to="/score-board"
-                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
                     >
-                      Leader Board
+                     <IoTrophyOutline className="text-xl"/> Leader Board
                     </Link>
                     <div
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400 cursor-pointer"
+                      className="flex gap-1 w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400 cursor-pointer"
                       onClick={() => {
                         setIsDropdownOpen(!isDropdownOpen);
                         handleLogout();
                       }}
                     >
-                      Logout
+                     <MdLogout className="text-xl"/> Logout
                     </div>
                   </div>
                 </div>

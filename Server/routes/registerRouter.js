@@ -10,20 +10,6 @@ router.get("/user", (req, res) => {
   res.send("Register page2");
 });
 
-router.post("/", async (req, res) => {
-  let user = await userModel.findOne({ email: req.body.email });
-  if (user) {
-    return res.status(400).send("User already exists");
-  }
-  const user2 = await userModel.create({
-    name: req.body.name,
-    email: req.body.email,
-    profilepic: req.body.profilepic,
-  });
-  console.log(user2);
-  res.send(req.body);
-});
-
 router.get("/getuser/:email", async (req, res) => {
   let user = await userModel.findOne({ email: req.params.email });
   if (!user) {
@@ -38,6 +24,47 @@ router.get("/getuser2/:id", async (req, res) => {
     return res.status(400).send("User not found");
   }
   res.send(user);
+});
+
+router.get("/getTopTen", async (req, res) => {
+  let user = await userModel.find({}).sort({ points: -1 }).limit(10);
+  if (!user) {
+    return res.status(400).send("User not found");
+  }
+  res.send(user);
+});
+
+router.get("/getRank/:id", async (req, res) => {
+  try {
+    const allUsers = await userModel.find({}).sort({ points: -1 });
+
+    const rankIndex = allUsers.findIndex(
+      (user) => user._id.toString() === req.params.id
+    );
+
+    if (rankIndex === -1) {
+      return res.status(404).send("User not found");
+    }
+
+    res.send({ rank: rankIndex + 1 });
+  } catch (error) {
+    console.error("Error getting rank:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+router.post("/", async (req, res) => {
+  let user = await userModel.findOne({ email: req.body.email });
+  if (user) {
+    return res.status(400).send("User already exists");
+  }
+  const user2 = await userModel.create({
+    name: req.body.name,
+    email: req.body.email,
+    profilepic: req.body.profilepic,
+  });
+  console.log(user2);
+  res.send(req.body);
 });
 
 router.post("/changeName/:id", async (req, res) => {
