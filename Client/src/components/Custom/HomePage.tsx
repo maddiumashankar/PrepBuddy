@@ -161,7 +161,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
 
           {testType === "predefined" ? (
             <>
-              <p className="mt-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <p className="mt-2 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
                 MAANG Companies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -201,7 +201,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                   )
                 )}
               </div>
-              <p className="mt-7 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <p className="mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
                 Tier-1 Companies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -245,7 +245,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                   </div>
                 ))}
               </div>
-              <p className="mt-7 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <p className="mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
                 Growing Startups / Unicorns
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -294,7 +294,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
               </div>
             </>
           ) : (
-            <div className="max-w-2xl mx-auto bg-gray-800 rounded-lg p-6 shadow-lg">
+            <div className="max-w-2xl mx-auto bg-gray-800 rounded-lg p-16 shadow-lg">
               <h2 className="text-2xl font-bold mb-6">Create Custom Test</h2>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">

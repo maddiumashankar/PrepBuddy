@@ -12,20 +12,21 @@ import { AIchatSession } from "../../gemini/AiModel";
 import questionsData from "../../gemini/sampleSet";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import useDetectTabSwitch from "../Custom/useDetectTabSwitch";
 
 const questions = geminiPrompt
   .split("<questions>")[1]
-  .split("*")
+  .split("***")
   .map((question) => question.trim());
 console.log(questions);
 const options = geminiPrompt
   .split("<options>")[1]
-  .split("*")
-  .map((option) => option.trim().split("@"));
+  .split("***")
+  .map((option) => option.trim().split("@*@"));
 console.log(options);
 const answers = geminiPrompt
   .split("<answers>")[1]
-  .split("*")
+  .split("***")
   .map((answer) => answer.trim());
 console.log(answers);
 
@@ -34,6 +35,7 @@ interface HeaderProps {
 }
 
 const TestPage: React.FC<HeaderProps> = ({ userID }) => {
+  useDetectTabSwitch();
   const [currentTime, setCurrentTime] = useState(10 * 60);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
     Array(questions.length).fill(null)
@@ -50,6 +52,8 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [confirmation, setConfirmation] = useState(true);
   const [title, setTitle] = useState<string>("");
   const [difficulty, setDifficulty] = useState<string>("");
+  const [quitConfirmation, setQuitConfirmation] = useState(false);
+  const [submitConfirmation, setSubmitConfirmation] = useState(false);
   useEffect(() => {
     if (currentTime <= 0) return;
     const timer = setInterval(() => {
@@ -134,7 +138,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
             "for the topic ${topic}",
             `most frequently asked in ${response.data.title} company`
           )
-          .replace("${difficulty}", response.data.difficulty);
+          .replace("${difficulty}", "hard");
         setNewPrompt(updatedPrompt);
         console.log(newPrompt);
         setTitle(response.data.title);
@@ -156,7 +160,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       const geminiQues =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<questions>")[1]
-          .split("*")
+          .split("***")
           .map((question) => question.trim());
 
       setGeminiQuestions(geminiQues ?? []);
@@ -164,15 +168,15 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       const geminiOps =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<options>")[1]
-          .split("*")
-          .map((option) => option.trim().split("@"));
+          .split("***")
+          .map((option) => option.trim().split("@*@"));
 
       setGeminiOptions(geminiOps ?? []);
 
       const geminiAns =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<answers>")[1]
-          .split("*")
+          .split("***")
           .map((answer) => answer.trim());
 
       setGeminiAnswers(geminiAns ?? []);
@@ -186,6 +190,31 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     }
   };
 
+  useEffect(() => {
+    const preventRefresh = (event: BeforeUnloadEvent) => {
+      event.preventDefault();
+      event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", preventRefresh);
+
+    return () => {
+      window.removeEventListener("beforeunload", preventRefresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleBack = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handleBack);
+
+    return () => {
+      window.removeEventListener("popstate", handleBack);
+    };
+  }, []);
   if (confirmation) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50 backdrop-blur-sm">
@@ -254,6 +283,78 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+  if (submitConfirmation) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50 backdrop-blur-sm">
+        <div className="bg-gray-900 rounded-3xl shadow-2xl p-10 text-white w-[90%] max-w-lg border border-indigo-500/30 transition-all duration-300">
+          <h1 className="text-3xl font-extrabold mb-6 text-indigo-400 tracking-wide text-center">
+            Are you sure you want to submit?
+          </h1>
+          <p className="text-center">
+            You have attended{" "}
+            <span className="text-indigo-300">
+              {userAnswers.filter((answer) => answer !== null).length}
+            </span>{" "}
+            / 10 Questions
+          </p>
+          <p className="text-center">
+            <span className="text-indigo-300">
+              {10 - userAnswers.filter((answer) => answer !== null).length}
+            </span>{" "}
+            remaining
+          </p>
+          <div className="mt-8 flex justify-center gap-6">
+            <button
+              onClick={() => {
+                setSubmitConfirmation(false);
+              }}
+              className="bg-red-600 cursor-pointer hover:bg-red-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-red-700/40"
+            >
+              No
+            </button>
+            <button
+              onClick={() => {
+                handleSubmitTest();
+              }}
+              className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-indigo-700/40"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (quitConfirmation) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50 backdrop-blur-sm">
+        <div className="bg-gray-900 rounded-3xl shadow-2xl p-10 text-white w-[90%] max-w-lg border border-indigo-500/30 transition-all duration-300">
+          <h1 className="text-3xl font-extrabold mb-6 text-indigo-400 tracking-wide text-center">
+            Are you sure you want to quit?
+          </h1>
+          <div className="mt-8 flex justify-center gap-6">
+            <button
+              onClick={() => {
+                setQuitConfirmation(false);
+              }}
+              className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-indigo-700/40"
+            >
+              No
+            </button>
+            <button
+              onClick={() => {
+                setQuitConfirmation(false);
+                navigate("/homepage");
+              }}
+              className="bg-red-600 cursor-pointer hover:bg-red-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-red-700/40"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   if (loading) {
     return (
       <>
@@ -268,6 +369,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       </>
     );
   }
+
   return (
     <div className="min-h-screen bg-gray-900 text-white w-full absolute">
       {/* Header */}
@@ -401,15 +503,44 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
               </button>
             ))}
           </div>
-          <div
-            onClick={handleSubmitTest}
-            className="relative w-[120px] mt-6 mx-auto"
-          >
-            <p className=" bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-              {" "}
-              Submit Test
-            </p>
+          <div className="flex justify-center ">
+            <div
+              onClick={() => {
+                setQuitConfirmation(true);
+              }}
+              className="relative w-[120px] mt-6 mx-auto"
+            >
+              <p className=" bg-red-600 hover:bg-red-700 text-white text-center font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                {" "}
+                Quit Test
+              </p>
+            </div>
+            <div
+              onClick={() => {
+                setSubmitConfirmation(true);
+              }}
+              className="relative w-[120px] mt-6 mx-auto"
+            >
+              <button className=" bg-indigo-600 hover:bg-indigo-700 text-center text-white font-medium py-2 px-4 rounded-md transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                {" "}
+                Submit Test
+              </button>
+            </div>
           </div>
+          <p className="text-center m-3">
+            {" "}
+            <span className="font-semibold text-indigo-400">Notice:</span> If
+            you encounter any errors in generating questions or options, <br />{" "}
+            please click{" "}
+            <span
+              className="text-red-400 cursor-pointer hover:text-red-500"
+              onClick={GenerateQuestions}
+            >
+              {" "}
+              here{" "}
+            </span>{" "}
+            to regenerate them.{" "}
+          </p>
         </div>
       </main>
     </div>
