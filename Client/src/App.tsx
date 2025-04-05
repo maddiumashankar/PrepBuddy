@@ -7,7 +7,7 @@ import TestPage from "./components/Custom/TestPage";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Profile from "./components/Custom/Profile";
-import PrevTests from "./components/Custom/prevTests";
+import PrevTests from "./components/Custom/PrevTests";
 function App() {
   const [userID, setUserId] = useState("");
   return (
