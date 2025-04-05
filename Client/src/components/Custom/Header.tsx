@@ -176,21 +176,19 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10">
                   <div className="py-1">
-                    {location.pathname === "/homepage" ? (
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm hover:bg-gray-700"
-                      >
-                        My Profile
-                      </Link>
-                    ) : (
-                      <Link
-                        to="/homepage"
-                        className="block px-4 py-2 text-sm hover:bg-gray-700"
-                      >
-                        Homepage
-                      </Link>
-                    )}
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                    >
+                      My Profile
+                    </Link>
+
+                    <Link
+                      to="/homepage"
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                    >
+                      Homepage
+                    </Link>
 
                     <Link
                       to="/previous-tests"

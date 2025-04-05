@@ -9,11 +9,12 @@ import {
 } from "../ui/card";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { FaLock } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+
 interface HeaderProps {
   userID: string;
 }
-import { FaLock } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 
 const userProfileData = {
   testsAttended: 12,
@@ -72,18 +73,35 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
         userProfileData.testsAttended = response.data.testAttended || 0;
         userProfileData.totalPoints = response.data.points || 0;
 
-        if (response.data.badges === 100) {
-          userProfileData.badges[0].achieved = true;
+        const response2 = await axios.get(
+          `${import.meta.env.VITE_API_BASE_URL}/test/getTop3Tests/${userID}`,
+          { withCredentials: true }
+        );
+        console.log("Profile response2:", response2.data);
+        interface Test {
+          title: string;
+          score: number;
+          createdAt: string;
         }
-        if (response.data.badges === 110) {
+
+        userProfileData.recentTests = response2.data.map((test: Test) => ({
+          name: test.title,
+          score: test.score,
+          date: new Date(test.createdAt).toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }),
+        }));
+
+        if (response.data.testAttended >= 10) {
           userProfileData.badges[0].achieved = true;
-          userProfileData.badges[1].achieved = true;
-        }
-        if (response.data.badges === 10) {
-          userProfileData.badges[1].achieved = true;
         }
         if (response.data.points >= 100) {
           userProfileData.badges[2].achieved = true;
+        }
+        if (response.data.badges === 1) {
+          userProfileData.badges[1].achieved = true;
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -101,7 +119,9 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading Profile...</p>
+            <p className="text-white mt-4 text-lg font-semibold">
+              Loading Profile...
+            </p>
           </div>
         </div>
       </>
@@ -158,7 +178,6 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
             </div>
           </div>
 
-          {/* Stats and Recent Tests */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
               <Card className="bg-gray-800 border-gray-700">
@@ -168,46 +187,65 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                     Your latest test performances
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {userProfileData.recentTests.map((test) => (
-                      <div
-                        key={test.id}
-                        className="bg-gray-700 rounded-lg p-4 flex justify-between items-center"
+                {userProfileData.recentTests.length > 0 ? (
+                  <CardContent>
+                    <div className="space-y-4">
+                      {userProfileData.recentTests.map((test) => (
+                        <div
+                          key={test.id}
+                          className="bg-gray-700 rounded-lg p-4 flex justify-between items-center"
+                        >
+                          <div>
+                            <h4 className="font-medium">{test.name}</h4>
+                            <p className="text-sm text-gray-400">{test.date}</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`text-lg font-bold ${
+                                test.score * 10 >= 90
+                                  ? "text-green-400"
+                                  : test.score * 10 >= 70
+                                  ? "text-yellow-400"
+                                  : "text-red-400"
+                              }`}
+                            >
+                              {test.score * 10}%
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                ) : (
+                  <>
+                    <div className="text-center p-6 bg-gray-800 rounded-lg shadow-md">
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        No Tests to Display
+                      </h3>
+                      <p className="text-gray-400 mb-4">
+                        You haven't taken any tests yet.
+                      </p>
+                      <Link
+                        to="/homepage"
+                        className="inline-block bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-500 transition"
                       >
-                        <div>
-                          <h4 className="font-medium">{test.name}</h4>
-                          <p className="text-sm text-gray-400">{test.date}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`text-lg font-bold ${
-                              test.score >= 90
-                                ? "text-green-400"
-                                : test.score >= 70
-                                ? "text-yellow-400"
-                                : "text-red-400"
-                            }`}
-                          >
-                            {test.score}%
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
+                        Take Your First Test
+                      </Link>
+                    </div>
+                  </>
+                )}
+
                 <CardFooter className="border-t border-gray-700 pt-4">
-                  <a
-                    href="/previous-tests"
+                  <Link
+                    to="/previous-tests"
                     className="text-indigo-400 hover:text-indigo-300 transition text-sm"
                   >
                     View all test history →
-                  </a>
+                  </Link>
                 </CardFooter>
               </Card>
             </div>
 
-            {/* Badges Section */}
             <div>
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>

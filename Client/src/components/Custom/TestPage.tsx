@@ -102,6 +102,22 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     const percentage = Math.round((score / questions.length) * 100);
     console.log(score, percentage, "%");
     setScoreBoard(true);
+    if (score == 10) {
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_BASE_URL}/test/updateBadge/${userID}`,
+          {
+            badges: 1,
+          },
+          { withCredentials: true }
+        );
+        console.log("Server Response data123:", response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/test/updateScore/${userID}`,
@@ -110,13 +126,21 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
         },
         { withCredentials: true }
       );
-      console.log("Server Response data123:", response.data);
+      const response2 = await axios.post(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/test/updateScoreInTestModel/${userID}`,
+        {
+          score: score,
+        },
+        { withCredentials: true }
+      );
+      console.log("Server Response data123:", response.data ,"response2.data)",response2.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-
   };
 
   const incrementSlideNo = () => {
@@ -285,15 +309,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
             All The Best
           </span>
           <div className="mt-8 flex justify-center gap-6">
-            <button
-              onClick={() => {
-                setConfirmation(false);
-                navigate("/homepage");
-              }}
-              className="bg-red-600 cursor-pointer hover:bg-red-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-red-700/40"
-            >
-              Cancel
-            </button>
             <button
               onClick={() => {
                 GenerateQuestions();
