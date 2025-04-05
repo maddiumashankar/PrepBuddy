@@ -7,7 +7,8 @@ import TestPage from "./components/Custom/TestPage";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import Profile from "./components/Custom/Profile";
-import PrevTests from "./components/Custom/prevTests";
+import PrevTests from "./components/Custom/PrevTests";
+import ScoreBoard from "./components/Custom/ScoreBoard";
 function App() {
   const [userID, setUserId] = useState("");
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/testpage" element={<TestPage userID={userID} />} />
         <Route path="/profile" element={<Profile userID={userID} />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
+        <Route path="/score-board" element={<ScoreBoard userID={userID} />} />
       </Routes>
       <Footer />
     </div>

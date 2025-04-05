@@ -40,4 +40,16 @@ router.get("/getuser2/:id", async (req, res) => {
   res.send(user);
 });
 
+router.post("/changeName/:id", async (req, res) => {
+  let user = await userModel.findOneAndUpdate(
+    { _id: req.params.id },
+    { name: req.body.name },
+    { new: true }
+  );
+  if (!user) {
+    return res.status(400).send("User not found");
+  }
+  res.send(user);
+});
+
 module.exports = router;

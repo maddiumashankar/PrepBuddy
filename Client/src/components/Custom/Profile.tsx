@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { FaRegEdit } from "react-icons/fa";
 
 interface HeaderProps {
   userID: string;
@@ -56,7 +57,8 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const [confirmation, setConfirmation] = useState(false);
+  const [newName, setNewName] = useState<string>("");
   useEffect(() => {
     setLoading(true);
     if (!userID) return;
@@ -113,6 +115,22 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
     fetchData();
   }, [userID, navigate]);
 
+  const changeName = async () => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/register/changeName/${userID}`,
+        { name: newName },
+        { withCredentials: true }
+      );
+      console.log("Profile response:", response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      window.location.reload();
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -125,6 +143,45 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
           </div>
         </div>
       </>
+    );
+  }
+  if (confirmation) {
+    return (
+      <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
+        <div className="bg-gray-800 rounded-2xl shadow-lg p-8 text-white w-[90%] max-w-md text-center flex flex-col gap-6">
+          <h1 className="text-2xl font-bold mb-2">Change Your Dislplay Name</h1>
+          <div className="flex justify-center items-center my-4">
+            <input
+              value={newName}
+              type="text"
+              name="newName"
+              id="newName"
+              placeholder="Enter your new name"
+              className="w-1/2 px-4 py-2 border-2 border-white bg-transparent text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => setNewName(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-center gap-8">
+            <button
+              onClick={() => {
+                setConfirmation(false);
+              }}
+              className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+              onClick={() => {
+                changeName();
+                setConfirmation(false);
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
     );
   }
   return (
@@ -147,7 +204,16 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                 </div>
               ) : (
                 <>
-                  <h2 className="text-2xl font-bold">{user || "User"}</h2>
+                  <span className="flex items-center gap-2 justify-center md:justify-start">
+                    <h2 className="text-2xl font-bold">{user || "User"}</h2>{" "}
+                    <FaRegEdit
+                      className="text-xl opacity-25 cursor-pointer hover:opacity-100 transition duration-300"
+                      title="Change display name"
+                      onClick={() => {
+                        setConfirmation(true);
+                      }}
+                    />
+                  </span>
                   <p className="text-gray-400">{email}</p>
                 </>
               )}
@@ -171,7 +237,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                     #{userProfileData.rank}
                   </span>
                   <span className="text-sm text-gray-300">
-                    Score Board Rank
+                    Leader Board Rank
                   </span>
                 </div>
               </div>

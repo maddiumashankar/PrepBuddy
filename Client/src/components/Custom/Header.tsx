@@ -196,6 +196,12 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
                     >
                       Previous Tests
                     </Link>
+                    <Link
+                      to="/score-board"
+                      className="block px-4 py-2 text-sm hover:bg-gray-700"
+                    >
+                      Leader Board
+                    </Link>
                     <div
                       className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400 cursor-pointer"
                       onClick={() => {
