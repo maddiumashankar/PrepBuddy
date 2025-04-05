@@ -7,12 +7,13 @@ import {
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Badge } from "../ui/badge";
 import { useEffect, useState } from "react";
 import axios from "axios";
 interface HeaderProps {
   userID: string;
 }
+import { FaLock } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const userProfileData = {
   testsAttended: 12,
@@ -24,9 +25,27 @@ const userProfileData = {
     { id: 3, name: "Data Structures", score: 78, date: "2025-03-15" },
   ],
   badges: [
-    { id: 1, name: "First Test", description: "Completed your first test" },
-    { id: 2, name: "Perfect Score", description: "Scored 100% on a test" },
-    { id: 3, name: "Streak Master", description: "Completed 5 tests in a row" },
+    {
+      id: 1,
+      name: "Tenacious Ten",
+      description: "Completed 10 tests",
+      img: "bronze.png",
+      achieved: false,
+    },
+    {
+      id: 2,
+      name: "Flawless Victory",
+      description: "Scored 100% on a test",
+      img: "silver.png",
+      achieved: false,
+    },
+    {
+      id: 3,
+      name: "Century Club",
+      description: "Achieve total of 100 points",
+      img: "gold.png",
+      achieved: false,
+    },
   ],
 };
 
@@ -35,11 +54,11 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
   const [email, setEmail] = useState<string>("");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!userID) return;
-
     setLoading(true);
+    if (!userID) return;
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -50,6 +69,22 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
         setUser(response.data.name || "");
         setProfilePic(response.data.profilepic || "");
         setEmail(response.data.email || "");
+        userProfileData.testsAttended = response.data.testAttended || 0;
+        userProfileData.totalPoints = response.data.points || 0;
+
+        if (response.data.badges === 100) {
+          userProfileData.badges[0].achieved = true;
+        }
+        if (response.data.badges === 110) {
+          userProfileData.badges[0].achieved = true;
+          userProfileData.badges[1].achieved = true;
+        }
+        if (response.data.badges === 10) {
+          userProfileData.badges[1].achieved = true;
+        }
+        if (response.data.points >= 100) {
+          userProfileData.badges[2].achieved = true;
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -58,7 +93,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
     };
 
     fetchData();
-  }, [userID]);
+  }, [userID, navigate]);
 
   if (loading) {
     return (
@@ -66,7 +101,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+            <p className="text-white mt-4 text-lg font-semibold">Loading Profile...</p>
           </div>
         </div>
       </>
@@ -115,7 +150,9 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                   <span className="text-xl font-bold">
                     #{userProfileData.rank}
                   </span>
-                  <span className="text-sm text-gray-300">Score Board Rank</span>
+                  <span className="text-sm text-gray-300">
+                    Score Board Rank
+                  </span>
                 </div>
               </div>
             </div>
@@ -184,22 +221,14 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                     {userProfileData.badges.map((badge) => (
                       <div
                         key={badge.id}
-                        className="bg-gray-700 rounded-lg p-3 flex items-center gap-3"
+                        className="bg-gray-700 rounded-lg p-3 flex items-center gap-3 relative overflow-hidden"
                       >
-                        <div className="h-10 w-10 rounded-full bg-indigo-600 flex items-center justify-center">
-                          <svg
-                            className="h-6 w-6 text-indigo-200"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
+                        <div className="h-12 w-12 rounded-full flex items-center justify-center ">
+                          <img
+                            src={`${badge.img}`}
+                            alt={badge.name}
+                            className="h-full w-full"
+                          />
                         </div>
                         <div>
                           <h4 className="font-medium">{badge.name}</h4>
@@ -207,18 +236,18 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                             {badge.description}
                           </p>
                         </div>
+                        {!badge.achieved && (
+                          <div
+                            className="absolute inset-0 bg-black opacity-80 flex justify-center items-center"
+                            title={`${badge.description}`}
+                          >
+                            <FaLock className="text-indigo-500 text-3xl" />
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                 </CardContent>
-                <CardFooter className="border-t border-gray-700 pt-4">
-                  <Badge
-                    variant="secondary"
-                    className="bg-indigo-900 text-indigo-200 hover:bg-indigo-800"
-                  >
-                    {userProfileData.badges.length} Badges Earned
-                  </Badge>
-                </CardFooter>
               </Card>
             </div>
           </div>

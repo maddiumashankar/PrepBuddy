@@ -15,6 +15,22 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
+  badges:{
+    type: Number,
+    default: 0,
+  },
+  points:{
+    type: Number,
+    default: 0,
+  },
+  testAttended:{
+    type: Number,
+    default: 0,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now, 
+  },
   creditsUsed: {
     type: Number,
     default: 0,

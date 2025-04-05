@@ -46,6 +46,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [geminiQuestions, setGeminiQuestions] = useState<string[]>([]);
   const [geminiOptions, setGeminiOptions] = useState<string[][]>([]);
   const [geminiAnswers, setGeminiAnswers] = useState<string[]>([]);
+  const [geminiExplaination, setGeminiExplaination] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [newPrompt, setNewPrompt] = useState<string>(geminiPrompt);
@@ -54,6 +55,9 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   const [difficulty, setDifficulty] = useState<string>("");
   const [quitConfirmation, setQuitConfirmation] = useState(false);
   const [submitConfirmation, setSubmitConfirmation] = useState(false);
+  const [scoreBoard, setScoreBoard] = useState(false);
+  const [score, setScore] = useState<number>(0);
+
   useEffect(() => {
     if (currentTime <= 0) return;
     const timer = setInterval(() => {
@@ -89,15 +93,30 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     setUserAnswers(newAnswers);
   };
 
-  const handleSubmitTest = () => {
+  const handleSubmitTest = async () => {
     console.log(userAnswers);
     const score = userAnswers.reduce((total, answer, index) => {
       return answer?.trim() === geminiAnswers[index].trim() ? total + 1 : total;
     }, 0);
-
+    setScore(score);
     const percentage = Math.round((score / questions.length) * 100);
-
     console.log(score, percentage, "%");
+    setScoreBoard(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/test/updateScore/${userID}`,
+        {
+          points: score,
+        },
+        { withCredentials: true }
+      );
+      console.log("Server Response data123:", response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+
   };
 
   const incrementSlideNo = () => {
@@ -181,6 +200,12 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
 
       setGeminiAnswers(geminiAns ?? []);
 
+      const geminiExp =
+        result.response?.candidates?.[0]?.content?.parts?.[0]?.text
+          ?.split("<explaination>")[1]
+          .split("***")
+          .map((answer) => answer.trim());
+      setGeminiExplaination(geminiExp ?? []);
       setLoading(false);
     } catch (error) {
       console.error("Error generating summary:", error);
@@ -315,10 +340,128 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
             <button
               onClick={() => {
                 handleSubmitTest();
+                setSubmitConfirmation(false);
               }}
               className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-indigo-700/40"
             >
               Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (scoreBoard) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 z-50 backdrop-blur-sm">
+        <div className="bg-gray-900 rounded-3xl shadow-2xl p-10 text-white w-full h-full overflow-y-auto border border-indigo-500/30 transition-all duration-300">
+          <h1 className="text-3xl font-extrabold mb-6 text-indigo-400 tracking-wide text-center">
+            🎉 Test Completed!
+          </h1>
+
+          <div className="text-center space-y-4 text-lg">
+            <p>
+              <span className="text-indigo-400 font-semibold">
+                Total Points:
+              </span>{" "}
+              {score} / 10
+            </p>
+            <p>
+              <span className="text-indigo-400 font-semibold">Percentage:</span>{" "}
+              {score * 10}%
+            </p>
+            <p className="text-green-400 font-medium">
+              {score == 10
+                ? "Perfect Score!"
+                : score >= 7
+                ? "Great Job!"
+                : score >= 4
+                ? "Good Effort!"
+                : "Keep Practicing!"}
+            </p>
+          </div>
+
+          {/* Mistake Breakdown */}
+          {score < 10 && (
+            <div className="mt-10">
+              <h2 className="text-2xl font-semibold text-red-400 text-center mb-4">
+                Your Mistakes
+              </h2>
+              <ul className="space-y-4 max-w-3xl mx-auto px-4">
+                {geminiAnswers.map((correct, index) => {
+                  const user = userAnswers[index];
+                  if (user && user.trim() !== correct.trim()) {
+                    return (
+                      <li
+                        key={index}
+                        className="bg-gray-800 p-4 rounded-xl shadow-md border border-red-500/30"
+                      >
+                        <p className="text-white font-medium mb-1">
+                          ❌ Question {index + 1}
+                        </p>
+                        <p className="text-red-400">
+                          Your Answer:{" "}
+                          <span className="font-semibold">{user}</span>
+                        </p>
+                        <p className="text-green-400">
+                          Correct Answer:{" "}
+                          <span className="font-semibold">{correct}</span>
+                        </p>
+
+                        <p className="text-white">
+                          Explaination:{" "}
+                          <span className="font-semibold">
+                            {geminiExplaination[index]}
+                          </span>
+                        </p>
+                      </li>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+              </ul>
+              <h2 className="text-2xl font-semibold text-green-400 text-center m-4">
+                Correct Answers
+              </h2>
+              <ul className="space-y-4 max-w-3xl mx-auto px-4">
+                {geminiAnswers.map((correct, index) => {
+                  const user = userAnswers[index];
+                  if (user && user.trim() === correct.trim()) {
+                    return (
+                      <li
+                        key={index}
+                        className="bg-gray-800 p-4 rounded-xl shadow-md border border-red-500/30"
+                      >
+                        <p className="text-white font-medium mb-1">
+                          ✔️ Question {index + 1}
+                        </p>
+                        <p className="text-green-400">
+                          Your Answer:{" "}
+                          <span className="font-semibold">{user}</span>
+                        </p>
+                        <p className="text-white">
+                          Explaination:{" "}
+                          <span className="font-semibold">
+                            {geminiExplaination[index]}
+                          </span>
+                        </p>
+                      </li>
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+              </ul>
+            </div>
+          )}
+
+          <div className="mt-10 flex justify-center gap-6">
+            <button
+              onClick={() => navigate("/homepage")}
+              className="bg-indigo-600 cursor-pointer hover:bg-indigo-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-md hover:shadow-indigo-700/40"
+            >
+              Go to Homepage
             </button>
           </div>
         </div>
@@ -355,6 +498,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+
   if (loading) {
     return (
       <>
