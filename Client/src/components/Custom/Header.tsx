@@ -63,6 +63,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
     return () => unsubscribe();
   }, [auth, navigate]);
 
+
   useEffect(() => {
     setIsDropdownOpen(false);
     if (email) {
@@ -183,29 +184,41 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
                   <div className="py-1">
                     <Link
                       to="/profile"
-                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/profile" ? "bg-gray-700" : ""
+                      }`}
                     >
                       <CgProfile className="text-xl" /> My Profile
                     </Link>
 
                     <Link
                       to="/homepage"
-                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/homepage" ? "bg-gray-700" : ""
+                      }`}
                     >
                       <TiHomeOutline className="text-xl" /> Homepage
                     </Link>
 
                     <Link
                       to="/previous-tests"
-                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/previous-tests"
+                          ? "bg-gray-700"
+                          : ""
+                      }`}
                     >
                       <FaRegNoteSticky className="text-xl" /> Previous Tests
                     </Link>
                     <Link
                       to="/score-board"
-                      className="flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/score-board"
+                          ? "bg-gray-700"
+                          : ""
+                      }`}
                     >
-                     <IoTrophyOutline className="text-xl"/> Leader Board
+                      <IoTrophyOutline className="text-xl" /> Leader Board
                     </Link>
                     <div
                       className="flex gap-1 w-full text-left px-4 py-2 text-sm hover:bg-gray-700 text-red-400 cursor-pointer"
@@ -214,7 +227,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
                         handleLogout();
                       }}
                     >
-                     <MdLogout className="text-xl"/> Logout
+                      <MdLogout className="text-xl" /> Logout
                     </div>
                   </div>
                 </div>

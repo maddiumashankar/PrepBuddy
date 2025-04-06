@@ -12,6 +12,7 @@ router.post("/addtest", async (req, res) => {
     title: req.body.title,
     difficulty: req.body.difficulty,
     userid: req.body.userid,
+    topic: req.body.topic || "Any",
   });
   res.send(test);
 });

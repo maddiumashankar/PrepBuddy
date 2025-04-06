@@ -1,6 +1,5 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   userID: string;
@@ -12,33 +11,13 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
   );
   const [userName, setUserName] = useState();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    difficulty: "Medium",
-    duration: 60,
-    questionCount: 20,
-  });
   const [title, setTitle] = useState("");
+  const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("Medium");
   const navigate = useNavigate();
   const [confirmation, setConfirmation] = useState(false);
-  const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        name === "questionCount" || name === "duration"
-          ? parseInt(value)
-          : value,
-    }));
-  };
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    toast.success("Test created! Redirecting to test page...");
-    console.log("Test configuration:", formData);
-  };
+  const [confirmation2, setConfirmation2] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -66,12 +45,14 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         {
           title: title,
           difficulty: difficulty,
+          topic: topic,
           userid: userID,
           createdAt: new Date(),
         },
         { withCredentials: true }
       );
       console.log("Server Response data:", response.data);
+
       navigate("/testpage");
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -126,6 +107,44 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+  if (confirmation2) {
+    return (
+      <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
+        <div className="bg-gray-800 rounded-2xl shadow-lg p-8 text-white w-[90%] max-w-md text-center">
+          <h1 className="text-2xl font-bold mb-4">Test Confirmation</h1>
+          <p className="text-lg mb-2">
+            <span className="font-semibold text-indigo-400">Topic:</span>{" "}
+            {topic}
+          </p>
+          <p className="text-lg mb-2">
+            <span className="font-semibold text-indigo-400">Company:</span>{" "}
+            {title}
+          </p>
+          <p className="text-lg mb-6">
+            <span className="font-semibold text-indigo-400">Difficulty:</span>{" "}
+            {difficulty}
+          </p>
+
+          <div className="flex justify-center gap-8">
+            <button
+              onClick={() => {
+                setConfirmation2(false);
+              }}
+              className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={addTest}
+              className="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div>
       <main className="container mx-auto px-4 py-6">
@@ -134,7 +153,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
           PrepBuddy! Get ready to test your skills!
         </h1>
 
-        {/* Test Selection Tabs */}
         <div className="mb-8">
           <div className="flex border-b border-gray-700 mb-6">
             <button
@@ -296,23 +314,45 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
           ) : (
             <div className="max-w-2xl mx-auto bg-gray-800 rounded-lg p-16 shadow-lg">
               <h2 className="text-2xl font-bold mb-6">Create Custom Test</h2>
-              <form onSubmit={handleSubmit}>
+              <form
+                onSubmit={() => {
+                  setConfirmation2(true);
+                }}
+              >
                 <div className="mb-4">
                   <label className="block text-gray-300 mb-2" htmlFor="title">
-                    Test Title
+                    Test Topic
                   </label>
                   <input
                     type="text"
                     id="title"
                     name="title"
-                    value={formData.title}
-                    onChange={handleFormChange}
+                    value={topic}
+                    onChange={(e) => {
+                      setTopic(e.target.value);
+                    }}
                     className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="e.g. Java Programming Test"
+                    placeholder="e.g. Computer Networks"
                     required
                   />
                 </div>
-
+                <div className="mb-4">
+                  <label className="block text-gray-300 mb-2" htmlFor="title">
+                    Company Name
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={title}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                    }}
+                    className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="e.g. Cisco"
+                    required
+                  />
+                </div>
                 <div className="mb-4">
                   <label
                     className="block text-gray-300 mb-2"
@@ -323,13 +363,15 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                   <select
                     id="difficulty"
                     name="difficulty"
-                    value={formData.difficulty}
-                    onChange={handleFormChange}
+                    value={difficulty}
+                    onChange={(e) => {
+                      setDifficulty(e.target.value);
+                    }}
                     className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
-                    <option value="easy">Easy</option>
+                    <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
-                    <option value="hard">Hard</option>
+                    <option value="Hard">Hard</option>
                   </select>
                 </div>
 

@@ -192,11 +192,11 @@ const ScoreBoard: React.FC = () => {
                 key={user.id}
                 className={`transition-all duration-300 rounded-xl p-4 ${
                   index === 0
-                    ? "bg-amber-200 text-amber-900 hover:bg-amber-300"
+                    ? "bg-amber-300 text-amber-900 hover:bg-amber-200"
                     : index === 1
-                    ? "bg-gray-200 text-gray-800 hover:bg-gray-200"
+                    ? "bg-gray-300 text-gray-800 hover:bg-gray-200"
                     : index === 2
-                    ? "bg-yellow-100 text-yellow-900 hover:bg-yellow-200"
+                    ? "bg-yellow-800 text-yellow-100 hover:bg-yellow-700"
                     : "bg-black hover:bg-zinc-800"
                 }`}
               >
@@ -208,11 +208,11 @@ const ScoreBoard: React.FC = () => {
                     <Avatar
                       className={`h-10 w-10 border-2 ${
                         index === 0
-                          ? "border-yellow-500"
+                          ? "border-yellow-800"
                           : index === 1
-                          ? "border-gray-400"
+                          ? "border-gray-700"
                           : index === 2
-                          ? "border-amber-700"
+                          ? "border-amber-500"
                           : "border-white"
                       }`}
                     >

@@ -6,6 +6,11 @@ const testSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  topic: {
+    type: String,
+    required: true,
+    default: "Any",
+  },
   score: {
     type: Number,
     required: true,

@@ -179,7 +179,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
         const updatedPrompt = geminiPrompt
           .replace(
             "for the topic ${topic}",
-            `most frequently asked in ${response.data.title} company`
+            `most frequently asked in ${response.data.title} company on ${response.data.topic} topic`
           )
           .replace("${difficulty}", "hard");
         setNewPrompt(updatedPrompt);
@@ -396,7 +396,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
             </p>
           </div>
 
-          {/* Mistake Breakdown */}
           {score < 10 && (
             <div className="mt-10">
               <h2 className="text-2xl font-semibold text-red-400 text-center mb-4">

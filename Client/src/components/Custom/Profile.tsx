@@ -199,6 +199,9 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
               <AvatarFallback className="bg-indigo-600 text-xl">
                 {user ? user.charAt(0).toUpperCase() : "U"}
               </AvatarFallback>
+              <div className="absolute bg-black w-full h-full opacity-0 cursor-pointer transition duration-200 hover:opacity-50 flex justify-center items-center">
+                <FaRegEdit className="text-2xl"/>
+              </div>
             </Avatar>
 
             <div className="flex-1 text-center md:text-left">
