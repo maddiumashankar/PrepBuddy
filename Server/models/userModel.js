@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/PrepBuddy");
+const dotenv = require("dotenv");
+dotenv.config();
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = mongoose.Schema({
   name: {
@@ -15,21 +17,21 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true,
   },
-  badges:{
+  badges: {
     type: Number,
     default: 0,
   },
-  points:{
+  points: {
     type: Number,
     default: 0,
   },
-  testAttended:{
+  testAttended: {
     type: Number,
     default: 0,
   },
   createdAt: {
     type: Date,
-    default: Date.now, 
+    default: Date.now,
   },
   creditsUsed: {
     type: Number,
