@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost:27017/PrepBuddy");
+const dotenv = require("dotenv");
+dotenv.config();
+
+mongoose.connect(process.env.MONGO_URI);
 
 const userSchema = mongoose.Schema({
   name: {
