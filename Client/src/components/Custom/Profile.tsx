@@ -141,7 +141,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
     if (!selectedFile) return;
     const formData = new FormData();
     formData.append("file", selectedFile);
-    formData.append("upload_preset", import.meta.env.VITE_PRESET_NAME);
+    formData.append("upload_preset", import.meta.env.VITE_CLOUD_PRESET_NAME);
     formData.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
 
     try {
