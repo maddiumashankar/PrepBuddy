@@ -19,7 +19,6 @@ const questions = geminiPrompt
   .split("***")
   .map((question) => question.trim());
 
-
 interface HeaderProps {
   userID: string;
 }
@@ -63,7 +62,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     }, 1000);
     return () => clearInterval(timer);
   }, [currentTime, geminiQuestions, geminiOptions, geminiAnswers]);
-
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -184,7 +182,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           ?.split("<questions>")[1]
           .split("***")
           .map((question) => question.trim());
-
       setGeminiQuestions(geminiQues ?? []);
 
       const geminiOps =
@@ -192,15 +189,20 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           ?.split("<options>")[1]
           .split("***")
           .map((option) => option.trim().split("@*@"));
-
       setGeminiOptions(geminiOps ?? []);
-
+      if (
+        !Array.isArray(geminiOptions) ||
+        !geminiOptions.every((opt) => Array.isArray(opt))
+      ) {
+        alert("Error generation questions. Please try again.");
+        navigate("/homepage");
+        return null;
+      }
       const geminiAns =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<answers>")[1]
           .split("***")
           .map((answer) => answer.trim());
-
       setGeminiAnswers(geminiAns ?? []);
 
       const geminiExp =
@@ -209,9 +211,8 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           .split("***")
           .map((answer) => answer.trim());
       setGeminiExplaination(geminiExp ?? []);
-      setLoading(false);
     } catch (error) {
-      console.error("Error generating summary:", error);
+      console.error("Error generating questions:", error);
     } finally {
       setCurrentTime(10 * 60);
       setLoading(false);
