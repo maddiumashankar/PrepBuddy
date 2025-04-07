@@ -408,32 +408,34 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                 <CardContent>
                   <div className="space-y-3">
                     {userProfileData.badges.map((badge) => (
-                      <div
-                        key={badge.id}
-                        className="bg-gray-700 rounded-lg p-3 flex items-center gap-3 relative overflow-hidden"
-                      >
-                        <div className="h-12 w-12 rounded-full flex items-center justify-center ">
-                          <img
-                            src={`${badge.img}`}
-                            alt={badge.name}
-                            className="h-full w-full"
-                          />
-                        </div>
-                        <div>
-                          <h4 className="font-medium">{badge.name}</h4>
-                          <p className="text-xs text-gray-400">
-                            {badge.description}
-                          </p>
-                        </div>
-                        {!badge.achieved && (
-                          <div
-                            className="absolute inset-0 bg-black opacity-80 flex justify-center items-center"
-                            title={`${badge.description}`}
-                          >
-                            <FaLock className="text-indigo-500 text-3xl" />
+                      <>
+                        <p className="text-xs text-center text-gray-400">
+                          {badge.description}
+                        </p>
+                        <div
+                          key={badge.id}
+                          className="bg-gray-700 rounded-lg p-3 flex items-center gap-3 relative overflow-hidden"
+                        >
+                          <div className="h-12 w-12 rounded-full flex items-center justify-center ">
+                            <img
+                              src={`${badge.img}`}
+                              alt={badge.name}
+                              className="h-full w-full"
+                            />
                           </div>
-                        )}
-                      </div>
+                          <div>
+                            <h4 className="font-medium">{badge.name}</h4>
+                          </div>
+                          {!badge.achieved && (
+                            <div
+                              className="absolute inset-0 bg-black opacity-80 flex justify-center items-center"
+                              title={`${badge.description}`}
+                            >
+                              <FaLock className="text-indigo-500 text-3xl" />
+                            </div>
+                          )}
+                        </div>
+                      </>
                     ))}
                   </div>
                 </CardContent>

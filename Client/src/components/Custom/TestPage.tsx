@@ -190,6 +190,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           .split("***")
           .map((option) => option.trim().split("@*@"));
       setGeminiOptions(geminiOps ?? []);
+
       if (
         !Array.isArray(geminiOptions) ||
         !geminiOptions.every((opt) => Array.isArray(opt))
@@ -198,6 +199,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
         navigate("/homepage");
         return null;
       }
+      
       const geminiAns =
         result.response?.candidates?.[0]?.content?.parts?.[0]?.text
           ?.split("<answers>")[1]
