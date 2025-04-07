@@ -79,4 +79,16 @@ router.post("/changeName/:id", async (req, res) => {
   res.send(user);
 });
 
+router.post("/changeProfilePic/:id", async (req, res) => {
+  let user = await userModel.findOneAndUpdate(
+    { _id: req.params.id },
+    { profilepic: req.body.profilepic },
+    { new: true }
+  );
+  if (!user) {
+    return res.status(400).send("User not found");
+  }
+  res.send(user);
+});
+
 module.exports = router;
