@@ -18,17 +18,7 @@ const questions = geminiPrompt
   .split("<questions>")[1]
   .split("***")
   .map((question) => question.trim());
-console.log(questions);
-const options = geminiPrompt
-  .split("<options>")[1]
-  .split("***")
-  .map((option) => option.trim().split("@*@"));
-console.log(options);
-const answers = geminiPrompt
-  .split("<answers>")[1]
-  .split("***")
-  .map((answer) => answer.trim());
-console.log(answers);
+
 
 interface HeaderProps {
   userID: string;
@@ -74,10 +64,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
     return () => clearInterval(timer);
   }, [currentTime, geminiQuestions, geminiOptions, geminiAnswers]);
 
-  useEffect(() => {
-    console.log(geminiQuestions, geminiOptions, geminiAnswers);
-    console.log(userID);
-  }, [geminiQuestions, geminiOptions, geminiAnswers]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -94,24 +80,20 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   };
 
   const handleSubmitTest = async () => {
-    console.log(userAnswers);
     const score = userAnswers.reduce((total, answer, index) => {
       return answer?.trim() === geminiAnswers[index].trim() ? total + 1 : total;
     }, 0);
     setScore(score);
-    const percentage = Math.round((score / questions.length) * 100);
-    console.log(score, percentage, "%");
     setScoreBoard(true);
     if (score == 10) {
       try {
-        const response = await axios.post(
+        await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/test/updateBadge/${userID}`,
           {
             badges: 1,
           },
           { withCredentials: true }
         );
-        console.log("Server Response data123:", response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -119,14 +101,14 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
       }
     }
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/test/updateScore/${userID}`,
         {
           points: score,
         },
         { withCredentials: true }
       );
-      const response2 = await axios.post(
+      await axios.post(
         `${
           import.meta.env.VITE_API_BASE_URL
         }/test/updateScoreInTestModel/${userID}`,
@@ -135,7 +117,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
         },
         { withCredentials: true }
       );
-      console.log("Server Response data123:", response.data ,"response2.data)",response2.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -175,7 +156,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           `${import.meta.env.VITE_API_BASE_URL}/test/gettest/${userID}`,
           { withCredentials: true }
         );
-        console.log("Server Response (Name):", response.data);
         const updatedPrompt = geminiPrompt
           .replace(
             "for the topic ${topic}",
@@ -183,7 +163,6 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
           )
           .replace("${difficulty}", "hard");
         setNewPrompt(updatedPrompt);
-        console.log(newPrompt);
         setTitle(response.data.title);
         setDifficulty(response.data.difficulty);
       } catch (error) {

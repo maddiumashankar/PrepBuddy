@@ -27,7 +27,6 @@ const PrevTests: React.FC<HeaderProps> = ({ userID }) => {
     array: [],
   });
   useEffect(() => {
-    setLoading(true);
     if (!userID) return;
     const fetchData = async () => {
       try {
@@ -36,8 +35,6 @@ const PrevTests: React.FC<HeaderProps> = ({ userID }) => {
           { withCredentials: true }
         );
         setUserProfileData({ array: response.data });
-
-        console.log("Profile data:", userProfileData);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -47,13 +44,14 @@ const PrevTests: React.FC<HeaderProps> = ({ userID }) => {
 
     fetchData();
   }, [userID, navigate]);
+
   if (loading) {
     return (
       <>
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+            <p className="text-white mt-4 text-lg font-semibold">Loading Previous Tests...</p>
           </div>
         </div>
       </>

@@ -58,7 +58,10 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [confirmation, setConfirmation] = useState(false);
+  const [confirmation2, setConfirmation2] = useState(false);
   const [newName, setNewName] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   useEffect(() => {
     setLoading(true);
     if (!userID) return;
@@ -68,7 +71,6 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
           `${import.meta.env.VITE_API_BASE_URL}/register/getuser2/${userID}`,
           { withCredentials: true }
         );
-        console.log("Profile response:", response.data);
         setUser(response.data.name || "");
         setProfilePic(response.data.profilepic || "");
         setEmail(response.data.email || "");
@@ -79,7 +81,6 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
           `${import.meta.env.VITE_API_BASE_URL}/test/getTop3Tests/${userID}`,
           { withCredentials: true }
         );
-        console.log("Profile response2:", response2.data);
         interface Test {
           title: string;
           score: number;
@@ -122,17 +123,46 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
 
   const changeName = async () => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/register/changeName/${userID}`,
         { name: newName },
         { withCredentials: true }
       );
-      console.log("Profile response:", response.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       window.location.reload();
       setLoading(false);
+    }
+  };
+
+  const handleUpload = async () => {
+    setLoading(true);
+    if (!selectedFile) return;
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("upload_preset", import.meta.env.VITE_PRESET_NAME);
+    formData.append("cloud_name", import.meta.env.VITE_CLOUD_NAME);
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${
+          import.meta.env.VITE_CLOUD_NAME
+        }/image/upload`,
+        formData
+      );
+      await axios.post(
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }/register/changeProfilePic/${userID}`,
+        { profilepic: response.data.secure_url },
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error("Upload failed:", err);
+    } finally {
+      setLoading(false);
+      window.location.reload();
     }
   };
 
@@ -189,6 +219,41 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+  if (confirmation2) {
+    return (
+      <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
+        <div className="bg-gray-800 rounded-2xl shadow-lg p-8 text-white w-[90%] max-w-md text-center flex flex-col gap-6">
+          <h1 className="text-2xl font-bold mb-2">Change Your Avatar</h1>
+
+          <div className="flex justify-center items-center my-4">
+            <input
+              type="file"
+              className="w-full cursor-pointer px-4 py-2 border-2 border-white bg-indigo-500 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+            />
+          </div>
+
+          <div className="flex justify-center gap-8">
+            <button
+              onClick={() => setConfirmation2(false)}
+              className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Cancel
+            </button>
+            <button
+              className="bg-indigo-600 hover:bg-indigo-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+              onClick={() => {
+                handleUpload();
+                setConfirmation2(false);
+              }}
+            >
+              Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-900 text-white w-full">
       <main className="container mx-auto px-4 py-8">
@@ -199,9 +264,14 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
               <AvatarFallback className="bg-indigo-600 text-xl">
                 {user ? user.charAt(0).toUpperCase() : "U"}
               </AvatarFallback>
-              {/* <div className="absolute bg-black w-full h-full opacity-0 cursor-pointer transition duration-200 hover:opacity-50 flex justify-center items-center">
-                <FaRegEdit className="text-2xl"/>
-              </div> */}
+              <div
+                className="absolute bg-black w-full h-full opacity-0 cursor-pointer transition duration-200 hover:opacity-50 flex justify-center items-center"
+                onClick={() => {
+                  setConfirmation2(true);
+                }}
+              >
+                <FaRegEdit className="text-2xl" />
+              </div>
             </Avatar>
 
             <div className="flex-1 text-center md:text-left">

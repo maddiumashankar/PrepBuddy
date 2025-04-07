@@ -10,7 +10,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
     "predefined"
   );
   const [userName, setUserName] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [topic, setTopic] = useState("");
   const [difficulty, setDifficulty] = useState("Medium");
@@ -25,7 +25,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
           `${import.meta.env.VITE_API_BASE_URL}/register/getuser2/${userID}`,
           { withCredentials: true }
         );
-        console.log("Server Response (Name):", response.data.name);
         setUserName(response.data.name);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -35,12 +34,11 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
     };
 
     fetchData();
-  }, [userID]);
+  }, [userID,navigate]);
 
   const addTest = async () => {
-    console.log("Adding test with title:", title);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_BASE_URL}/test/addtest`,
         {
           title: title,
@@ -51,7 +49,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         },
         { withCredentials: true }
       );
-      console.log("Server Response data:", response.data);
 
       navigate("/testpage");
     } catch (error) {
@@ -67,7 +64,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+            <p className="text-white mt-4 text-lg font-semibold">Loading Homepage...</p>
           </div>
         </div>
       </>

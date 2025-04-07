@@ -17,7 +17,6 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed:", currentUser);
       if (currentUser) {
         navigate("/homepage");
       }
@@ -48,17 +47,15 @@ const LandingPage: React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log("User Info:", result.user);
       const name = result.user.displayName;
       const email = result.user.email;
       const profilepic = result.user.photoURL;
       try {
-        const response = await axios.post(
+        await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/register`,
           { name, email, profilepic },
           { withCredentials: true }
         );
-        console.log("Server Response:", response.data);
       } catch (error) {
         console.error("Error sending data:", error);
       }

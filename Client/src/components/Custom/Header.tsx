@@ -14,10 +14,9 @@ import { MdLogout } from "react-icons/md";
 
 interface HeaderProps {
   setUserID: React.Dispatch<React.SetStateAction<string>>;
-  userID: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
+const Header: React.FC<HeaderProps> = ({ setUserID }) => {
   const location = useLocation();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -25,8 +24,6 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
   const [email, setEmail] = useState<string>("");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
-
-  console.log("ID from header:", userID);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -53,7 +50,6 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed:", currentUser);
       setEmail(currentUser?.email || "");
       setUserID("");
       if (!currentUser) {
@@ -73,7 +69,6 @@ const Header: React.FC<HeaderProps> = ({ setUserID, userID }) => {
             `${import.meta.env.VITE_API_BASE_URL}/register/getuser/${email}`,
             { withCredentials: true }
           );
-          console.log("Server Response:", response.data);
           setUserID(response.data._id || "");
           setUser(response.data.name || "");
           setProfilePic(response.data.profilepic || "");

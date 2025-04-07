@@ -148,7 +148,6 @@ const ScoreBoard: React.FC = () => {
             testsAttended: user.testAttended,
           })
         );
-        console.log("Server Response score:", response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -165,7 +164,7 @@ const ScoreBoard: React.FC = () => {
         <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
+            <p className="text-white mt-4 text-lg font-semibold">Loading Leaderboard...</p>
           </div>
         </div>
       </>

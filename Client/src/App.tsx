@@ -13,7 +13,7 @@ function App() {
   const [userID, setUserId] = useState("");
   return (
     <div className="w-full min-h-[100vh] h-auto bg-gradient-to-r from-gray-900 to-gray-800 flex flex-col justify-between items-center text-white">
-      <Header setUserID={setUserId} userID={userID} />
+      <Header setUserID={setUserId} />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/homepage" element={<HomePage userID={userID} />} />
