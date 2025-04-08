@@ -5,7 +5,8 @@ import registerRouter from "./routes/registerRouter.js";
 import testRouter from "./routes/testRouter.js";
 import uploadRouter from "./routes/uploadRouter.js";
 import cookieParser from "cookie-parser";
-
+const connectDB = require("./config/db.js");
+connectDB();
 dotenv.config();
 
 const app = express();

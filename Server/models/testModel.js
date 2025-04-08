@@ -1,8 +1,3 @@
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-dotenv.config();
-mongoose.connect(process.env.MONGO_URI);
-
 const testSchema = mongoose.Schema({
   title: {
     type: String,
@@ -24,7 +19,7 @@ const testSchema = mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now, // Server will set this automatically
+    default: Date.now, 
   },
   userid: {
     type: mongoose.Schema.Types.ObjectId,
