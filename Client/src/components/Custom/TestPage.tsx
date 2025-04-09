@@ -27,7 +27,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
   useDetectTabSwitch();
   const [currentTime, setCurrentTime] = useState(10 * 60);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>(
-    Array(questions.length).fill(null)
+    Array(10).fill(null)
   );
   const [currentSlide, setCurrentSlide] = useState(1);
   const nextRef = useRef<HTMLButtonElement>(null);

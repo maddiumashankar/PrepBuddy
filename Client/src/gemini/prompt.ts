@@ -1,4 +1,39 @@
-const geminiPrompt =
-  "Gemini@*@ generate 10 aptitude questions for the topic ${topic}. The difficulty of these questions is ${difficulty}.make sure there are 4 options always.Dont give 'All of the above' option. questions should be within <questions> and similarly for options and answers also. make sure to add *** where it is mentioned and @*@ between options only. In the answers section dont just give like A B C D mention the full answer again. The format should be as follows: { <questions> What is the time complexity of binary search? *** Which data structure uses LIFO (Last In First Out)? *** What does HTML stand for? *** Which sorting algorithm has the worst-case time complexity of O(n²)? *** What is the output of: console.log(typeof NaN)? *** What is the sum of angles in a triangle? *** How many bits are in a byte? *** What is the probability of getting heads in a fair coin toss? *** What is the square root of 144? *** Which gas is most abundant in Earth's atmosphere? <questions> <options> O(1)@*@ O(log n)@*@ O(n)@*@ O(n log n) *** Queue@*@ Stack@*@ Linked List@*@ Tree *** Hyper Text Markup Language@*@ High Tech Machine Learning@*@ Home Tool Markup Language@*@ Hyperlink Text Management Logic *** Merge Sort@*@ Quick Sort@*@ Bubble Sort@*@ Heap Sort *** NaN@*@ undefined@*@ number@*@ object *** 90°@*@ 180°@*@ 270°@*@ 360° *** 4@*@ 8@*@ 16@*@ 32 *** 1/2@*@ 1/3@*@ 1/4@*@ 1 *** 10@*@ 12@*@ 14@*@ 16 *** Oxygen@*@ Nitrogen@*@ Carbon Dioxide@*@ Argon <options> <answers> O(log n) *** Stack *** Hyper Text Markup Language *** Bubble Sort *** number *** 180° *** 8 *** 1/2 *** 12 *** Nitrogen <answers> <explaination> 1st question explanation *** 2nd question explaination *** 3rd question explaination *** and so on <explaination> } keep it in string only dont change the syntax. ";
+const geminiPrompt = 
+  "Gemini, generate exactly 10 multiple-choice aptitude questions for the topic ${topic}. The difficulty level is ${difficulty}.\n\n" +
+  "⚠️ Strict Format Instructions:\n" +
+  "- Each question must have exactly 4 options.\n" +
+  "- Do NOT include options like 'All of the above' or 'None of the above'.\n" +
+  "- ❌ Do NOT prefix any option with A), B), C), D), or similar.\n" +
+  "- ❌ Do NOT use A/B/C/D in the <answers> section. Use full answer text only.\n" +
+  "- ✅ The answer to each question must be **one of the 4 options provided** for that question — no extra or made-up answers.\n" +
+  "- Enclose all questions in <questions>...</questions>, and separate them using ***.\n" +
+  "- Enclose all options in <options>...</options>, and separate each set of 4 options using ***.\n" +
+  "- Within each set, separate the 4 options using **@*@** (no line breaks between them).\n" +
+  "- Enclose all full-text answers in <answers>...</answers>, separated by ***.\n" +
+  "- Enclose brief explanations in <explaination>...</explaination>, also separated by ***.\n\n" +
+  "⚠️ Very Important: Follow the exact format. No extra text or formatting.\n\n" +
+  "Example Format:\n" +
+  "{\n" +
+  "<questions>\n" +
+  "What is the time complexity of binary search? ***\n" +
+  "Which data structure uses LIFO (Last In First Out)? ***\n" +
+  "...\n" +
+  "<questions>\n\n" +
+  "<options>\n" +
+  "O(1)@*@O(log n)@*@O(n)@*@O(n log n) ***\n" +
+  "Queue@*@Stack@*@Linked List@*@Tree ***\n" +
+  "...\n" +
+  "<options>\n\n" +
+  "<answers>\n" +
+  "O(log n) ***\n" +
+  "Stack ***\n" +
+  "...\n" +
+  "<answers>\n\n" +
+  "<explaination>\n" +
+  "Binary search cuts the array in half... ***\n" +
+  "Stack uses LIFO... ***\n" +
+  "...\n" +
+  "<explaination>\n" +
+  "}\n";
 
 export default geminiPrompt;
