@@ -26,7 +26,6 @@ const LandingPage: React.FC = () => {
 
   const handleLogin = async () => {};
   const provider = new GoogleAuthProvider();
-  // const [loading, setLoading] = useState(false);
 
   useGSAP(() => {
     gsap.from("#box", {
@@ -37,12 +36,6 @@ const LandingPage: React.FC = () => {
       ease: "sine.inOut",
     });
   }, []);
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setLoading(false);
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, []);
 
   const handleGoogleLogin = async () => {
     try {
@@ -59,9 +52,10 @@ const LandingPage: React.FC = () => {
       } catch (error) {
         console.error("Error sending data:", error);
       }
-      navigate("/homepage");
     } catch (error) {
       console.error("Login failed:", error);
+    } finally {
+      navigate("/homepage");
     }
   };
 
