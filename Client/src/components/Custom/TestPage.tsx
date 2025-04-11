@@ -14,11 +14,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useDetectTabSwitch from "../Custom/useDetectTabSwitch";
 
-const questions = geminiPrompt
-  .split("<questions>")[1]
-  .split("***")
-  .map((question) => question.trim());
-
 interface HeaderProps {
   userID: string;
 }
@@ -542,7 +537,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
             <span className="text-sm text-gray-300">Progress</span>
             <span className="text-sm text-gray-300">
               {userAnswers.filter((ans) => ans !== null).length} /{" "}
-              {questions.length} answered
+              {geminiQuestions.length} answered
             </span>
           </div>
           <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
@@ -551,7 +546,7 @@ const TestPage: React.FC<HeaderProps> = ({ userID }) => {
               style={{
                 width: `${
                   (userAnswers.filter((ans) => ans !== null).length /
-                    questions.length) *
+                    geminiQuestions.length) *
                   100
                 }%`,
               }}

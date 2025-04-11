@@ -99,7 +99,7 @@ router.get("/getTop3Tests/:id", async (req, res) => {
 router.get("/getAllTests/:id", async (req, res) => {
   const test = await testModel.find({ userid: req.params.id }).sort({
     createdAt: -1,
-  });
+  }).limit(20);
   console.log(test);
   res.send(test);
 });
