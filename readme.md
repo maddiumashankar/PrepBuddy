@@ -63,7 +63,5 @@ We ❤️ open source. Feel free to contribute and make PrepBuddy even better!
 
 We'll review your PR soon!
 
----
 
-## 📁 Project Structure (Simplified)
 
