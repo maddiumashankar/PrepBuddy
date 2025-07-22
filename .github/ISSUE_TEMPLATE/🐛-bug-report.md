@@ -1,8 +1,8 @@
 ---
-name: Bug report
+name: "\U0001F41B Bug report"
 about: Fix functional, UI, performance, compatibility, and security issues.
 title: ''
-labels: gssoc, hacktoberfest
+labels: hacktoberfest
 assignees: ''
 
 ---
