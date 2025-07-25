@@ -9,6 +9,8 @@ import { useState } from "react";
 import Profile from "./components/Custom/Profile";
 import PrevTests from "./components/Custom/PrevTests";
 import ScoreBoard from "./components/Custom/ScoreBoard";
+import FavoritesPage from "./components/Custom/FavoritesPage";
+
 function App() {
   const [userID, setUserId] = useState("");
   return (
@@ -20,7 +22,8 @@ function App() {
         <Route path="/testpage" element={<TestPage userID={userID} />} />
         <Route path="/profile" element={<Profile userID={userID} />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
-        <Route path="/score-board" element={<ScoreBoard/>} />
+        <Route path="/score-board" element={<ScoreBoard />} />
+        <Route path="/favorites" element={<FavoritesPage userID={userID} />} />
       </Routes>
       <Footer />
     </div>

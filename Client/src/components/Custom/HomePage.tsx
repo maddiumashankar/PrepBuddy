@@ -1,15 +1,17 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { cn } from "../../../lib/utils";
+
 interface HeaderProps {
   userID: string;
 }
 
 const HomePage: React.FC<HeaderProps> = ({ userID }) => {
-  const [testType, setTestType] = useState<"predefined" | "custom">(
+  const [testType, setTestType] = useState<"predefined" | "custom" | "focus">(
     "predefined"
   );
-  const [userName, setUserName] = useState();
+  const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [topic, setTopic] = useState("");
@@ -17,7 +19,70 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
   const navigate = useNavigate();
   const [confirmation, setConfirmation] = useState(false);
   const [confirmation2, setConfirmation2] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [favorites, setFavorites] = useState<string[]>([]);
 
+  const maang = ["Meta", "Apple", "Amazon", "Netflix", "Google"];
+  const tier1 = [
+    "Microsoft",
+    "Adobe",
+    "VMware",
+    "Cisco",
+    "Uber",
+    "Twitter",
+    "Oracle",
+  ];
+  const startup = [
+    "Zomato",
+    "Swiggy",
+    "Byjus",
+    "Flipkart",
+    "Paytm",
+    "Razorpay",
+    "PhonePe",
+    "Meesho",
+    "Ola",
+    "Unacademy",
+  ];
+
+  const filteredmaang = maang.filter(
+    (company) =>
+      searchQuery.trim() === "" ||
+      company.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredTier1 = tier1.filter(
+    (company) =>
+      searchQuery.trim() === "" ||
+      company.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredStartup = startup.filter(
+    (company) =>
+      searchQuery.trim() === "" ||
+      company.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const isEmpty =
+    filteredmaang.length === 0 &&
+    filteredTier1.length === 0 &&
+    filteredStartup.length === 0;
+
+  useEffect(() => {
+  const saved = localStorage.getItem("favoriteCompanies");
+  if (saved) {
+    setFavorites(JSON.parse(saved));
+  }
+}, []);
+
+const toggleFavorite = (company: string) => {
+  let updatedFavorites;
+  if (favorites.includes(company)) {
+    updatedFavorites = favorites.filter((c) => c !== company);
+  } else {
+    updatedFavorites = [...favorites, company];
+  }
+  setFavorites(updatedFavorites);
+  localStorage.setItem("favoriteCompanies", JSON.stringify(updatedFavorites));
+};
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,9 +97,8 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         setLoading(false);
       }
     };
-
     fetchData();
-  }, [userID,navigate]);
+  }, [userID, navigate]);
 
   const addTest = async () => {
     try {
@@ -49,7 +113,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         },
         { withCredentials: true }
       );
-
       navigate("/testpage");
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -60,16 +123,17 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
 
   if (loading) {
     return (
-      <>
-        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
-          <div className="flex flex-col items-center">
-            <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
-            <p className="text-white mt-4 text-lg font-semibold">Loading Homepage...</p>
-          </div>
+      <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-99">
+        <div className="flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
+          <p className="text-white mt-4 text-lg font-semibold">
+            Loading Homepage...
+          </p>
         </div>
-      </>
+      </div>
     );
   }
+
   if (confirmation) {
     return (
       <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
@@ -83,7 +147,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
             <span className="font-semibold text-indigo-400">Difficulty:</span>{" "}
             {difficulty}
           </p>
-
           <div className="flex justify-center gap-8">
             <button
               onClick={() => {
@@ -104,6 +167,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+
   if (confirmation2) {
     return (
       <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
@@ -121,7 +185,6 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
             <span className="font-semibold text-indigo-400">Difficulty:</span>{" "}
             {difficulty}
           </p>
-
           <div className="flex justify-center gap-8">
             <button
               onClick={() => {
@@ -142,6 +205,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+
   return (
     <div>
       <main className="container mx-auto px-4 py-6">
@@ -151,9 +215,9 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
         </h1>
 
         <div className="mb-8">
-          <div className="flex border-b border-gray-700 mb-6">
+          <div className="flex border-b border-gray-700 mb-6 justify-center">
             <button
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 text-lg ${
                 testType === "predefined"
                   ? "border-b-2 border-indigo-500 text-indigo-400"
                   : "text-gray-400"
@@ -163,7 +227,7 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
               Popular Company Tests
             </button>
             <button
-              className={`px-4 py-2 ${
+              className={`px-4 py-2 text-lg ${
                 testType === "custom"
                   ? "border-b-2 border-indigo-500 text-indigo-400"
                   : "text-gray-400"
@@ -172,16 +236,45 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
             >
               Create Custom Test
             </button>
+            <button
+              className={`px-4 py-2 text-lg ${
+                testType === "focus"
+                  ? "border-b-2 border-indigo-500 text-indigo-400"
+                  : "text-gray-400"
+              } cursor-pointer`}
+              onClick={() => setTestType("focus")}
+            >
+              Choose Your Focus Area
+            </button>
           </div>
 
-          {testType === "predefined" ? (
+          {testType === "predefined" && (
             <>
-              <p className="mt-2 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <div className="flex justify-center mb-6">
+                <input
+                  type="text"
+                  placeholder="Search for a company..."
+                  className="w-full md:w-1/2 bg-gray-700 border border-gray-600 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+              {isEmpty && (
+                <p className="text-gray-400 mt-4 text-center">
+                  No results found.
+                </p>
+              )}
+              <p
+                className={cn(
+                  "mt-2 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center",
+                  filteredmaang.length === 0 && "hidden"
+                )}
+              >
                 MAANG Companies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {["Meta", "Apple", "Amazon", "Netflix", "Google"].map(
-                  (company) => (
+                {filteredmaang.length > 0 &&
+                  filteredmaang.map((company) => (
                     <div
                       key={company}
                       className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
@@ -196,6 +289,13 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                             alt={`${company} logo`}
                             width={50}
                           />
+                           <button
+                            onClick={() => toggleFavorite(company)}
+                            className="ml-2 text-yellow-400 text-2xl"
+                           title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}>
+                           
+                           {favorites.includes(company) ? "★" : "☆"}
+                          </button>
                         </div>
                       </div>
                       <p className="text-gray-300 mb-4">
@@ -213,111 +313,127 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                         Start Test
                       </button>
                     </div>
-                  )
-                )}
+                  ))}
               </div>
-              <p className="mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <p
+                className={cn(
+                  "mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center",
+                  filteredTier1.length === 0 && "hidden"
+                )}
+              >
                 Tier-1 Companies
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                  "Microsoft",
-                  "Adobe",
-                  "VMware",
-                  "Cisco",
-                  "Uber",
-                  "Twitter",
-                  "Oracle",
-                ].map((company) => (
-                  <div
-                    key={company}
-                    className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold mb-3">{company}</h3>
-                      <div>
-                        <img
-                          src={`https://logo.clearbit.com/${company.toLowerCase()}.com`}
-                          alt={`${company} logo`}
-                          width={50}
-                        />
-                      </div>
-                    </div>
-                    <p className="text-gray-300 mb-4">
-                      Take the {company} aptitude test to practice for your
-                      interview.
-                    </p>
-                    <button
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition cursor-pointer"
-                      onClick={() => {
-                        setTitle(company);
-                        setDifficulty("Medium");
-                        setConfirmation(true);
-                      }}
+                {filteredTier1.length > 0 &&
+                  filteredTier1.map((company) => (
+                    <div
+                      key={company}
+                      className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
                     >
-                      Start Test
-                    </button>
-                  </div>
-                ))}
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold mb-3">
+                          {company}
+                        </h3>
+                        <div>
+                          <img
+                            src={`https://logo.clearbit.com/${company.toLowerCase()}.com`}
+                            alt={`${company} logo`}
+                            width={50}
+                          />
+                          <button
+                             onClick={() => toggleFavorite(company)}
+                             className="ml-2 text-yellow-400 text-2xl"
+                             title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
+                             >
+                          {favorites.includes(company) ? "★" : "☆"}
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-gray-300 mb-4">
+                        Take the {company} aptitude test to practice for your
+                        interview.
+                      </p>
+                      <button
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition cursor-pointer"
+                        onClick={() => {
+                          setTitle(company);
+                          setDifficulty("Medium");
+                          setConfirmation(true);
+                        }}
+                      >
+                        Start Test
+                      </button>
+                    </div>
+                  ))}
               </div>
-              <p className="mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center">
+              <p
+                className={cn(
+                  "mt-7 mb-2 flex mx-auto justify-center items-center font-bold text-3xl text-indigo-500 text-center",
+                  filteredStartup.length === 0 && "hidden"
+                )}
+              >
                 Growing Startups / Unicorns
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                  "Zomato",
-                  "Swiggy",
-                  "Byjus",
-                  "Flipkart",
-                  "Paytm",
-                  "Razorpay",
-                  "PhonePe",
-                  "Meesho",
-                  "Ola",
-                  "Unacademy",
-                ].map((company) => (
-                  <div
-                    key={company}
-                    className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
-                  >
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold mb-3">{company}</h3>
-                      <div>
-                        <img
-                          src={`https://logo.clearbit.com/${company.toLowerCase()}.com`}
-                          alt={`${company} logo`}
-                          width={50}
-                        />
-                      </div>
-                    </div>
-                    <p className="text-gray-300 mb-4">
-                      Take the {company} aptitude test to practice for your
-                      interview.
-                    </p>
-                    <button
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition cursor-pointer"
-                      onClick={() => {
-                        setTitle(company);
-                        setDifficulty("Medium");
-                        setConfirmation(true);
-                      }}
+                {filteredStartup.length > 0 &&
+                  filteredStartup.map((company) => (
+                    <div
+                      key={company}
+                      className="bg-gray-800 rounded-lg p-6 shadow-lg hover:shadow-xl hover:bg-gray-900 transition "
                     >
-                      Start Test
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-xl font-semibold mb-3">
+                          {company}
+                        </h3>
+                        <div>
+                          <img
+                            src={`https://logo.clearbit.com/${company.toLowerCase()}.com`}
+                            alt={`${company} logo`}
+                            width={50}
+                          />
+                          <button
+                     onClick={() => toggleFavorite(company)}
+                      className="ml-2 text-yellow-400 text-2xl"
+                      title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
+                    >
+                      {favorites.includes(company) ? "★" : "☆"}
                     </button>
-                  </div>
-                ))}
+                        </div>
+                      </div>
+                      <p className="text-gray-300 mb-4">
+                        Take the {company} aptitude test to practice for your
+                        interview.
+                      </p>
+                      <button
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition cursor-pointer"
+                        onClick={() => {
+                          setTitle(company);
+                          setDifficulty("Medium");
+                          setConfirmation(true);
+                        }}
+                      >
+                        Start Test
+                      </button>
+                    </div>
+                  ))}
               </div>
             </>
-          ) : (
+          )}
+
+          {testType === "custom" && (
             <div className="max-w-2xl mx-auto bg-gray-800 rounded-lg p-16 shadow-lg">
               <h2 className="text-2xl font-bold mb-6">Create Custom Test</h2>
               <form
-                onSubmit={() => {
-                  setConfirmation2(true);
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    setConfirmation2(true);
                 }}
               >
                 <div className="mb-4">
-                  <label className="block text-gray-300 mb-2" htmlFor="title">
+                  <label
+                    className="block text-gray-300 mb-2"
+                    htmlFor="title"
+                  >
                     Test Topic
                   </label>
                   <input
@@ -334,7 +450,10 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-gray-300 mb-2" htmlFor="title">
+                  <label
+                    className="block text-gray-300 mb-2"
+                    htmlFor="title"
+                  >
                     Company Name
                   </label>
                   <input
@@ -379,6 +498,48 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
                   Generate Test
                 </button>
               </form>
+            </div>
+          )}
+
+          {testType === "focus" && (
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-2xl font-bold mb-6 text-center">
+                Select a Practice Area
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div
+                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Aptitude Training 🧠
+                  </h3>
+                  <p className="text-gray-400">
+                    Sharpen your logical and quantitative skills.
+                  </p>
+                </div>
+
+                <div
+                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    Technical Questions 💻
+                  </h3>
+                  <p className="text-gray-400">
+                    Practice questions on core CS subjects.
+                  </p>
+                </div>
+
+                <div
+                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center"
+                >
+                  <h3 className="text-xl font-semibold text-white mb-2">
+                    AI-Powered Interviews 🤖
+                  </h3>
+                  <p className="text-gray-400">
+                    Simulate real interviews with AI feedback.
+                  </p>
+                </div>
+              </div>
             </div>
           )}
         </div>
