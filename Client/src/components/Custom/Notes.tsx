@@ -1,6 +1,3 @@
-import * as React from "react";
-import { FaFilePdf } from "react-icons/fa";
-
 const notesData = [
   {
     title: "Data Structures & Algorithms",
