@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import React from "react";
+import * as React from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { auth } from "../../firebase/firebaseConfig";
@@ -8,9 +8,10 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import axios from "axios";
 import { CgProfile } from "react-icons/cg";
 import { TiHomeOutline } from "react-icons/ti";
-import { FaRegNoteSticky } from "react-icons/fa6";
+import { FaRegStickyNote } from "react-icons/fa";
 import { IoTrophyOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
+import { MdHistoryEdu } from "react-icons/md"; 
 
 interface HeaderProps {
   setUserID: React.Dispatch<React.SetStateAction<string>>;
@@ -225,7 +226,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
                 <svg
                   className={`h-4 w-4 transition-transform text-white ${ // Added text-white for icon
                     isDropdownOpen ? "rotate-180" : ""
-                  }`}
+                    }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -244,9 +245,8 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
                   <div className="py-1">
                     <Link
                       to="/profile"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
-                        location.pathname === "/profile" ? "bg-gray-700" : ""
-                      }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/profile" ? "bg-gray-700" : ""
+                        }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
                       <CgProfile className="text-xl" /> My Profile
@@ -254,47 +254,53 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
 
                     <Link
                       to="/homepage"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
-                        location.pathname === "/homepage" ? "bg-gray-700" : ""
-                      }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/homepage" ? "bg-gray-700" : ""
+                        }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
                       <TiHomeOutline className="text-xl" /> Homepage
                     </Link>
 
                     <Link
-                      to="/previous-tests"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
-                        location.pathname === "/previous-tests"
-                          ? "bg-gray-700"
-                          : ""
-                      }`}
+                      to="/notes"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/notes" ? "bg-gray-700" : ""
+                        }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-                      <FaRegNoteSticky className="text-xl" /> Previous Tests
+                      <FaRegStickyNote className="text-xl" /> Notes
+                    </Link>
+
+
+                    <Link
+                      to="/previous-tests"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/previous-tests"
+                          ? "bg-gray-700"
+                          : ""
+                        }`}
+                      onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
+                    >
+                      <MdHistoryEdu  className="text-xl" /> Previous Tests
                     </Link>
                     <Link
                       to="/score-board"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
-                        location.pathname === "/score-board"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/score-board"
                           ? "bg-gray-700"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-                      
+
                       <IoTrophyOutline className="text-xl" /> Leader Board
                     </Link>
                     <Link
                       to="/favorites"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
-                        location.pathname === "/favorites"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/favorites"
                           ? "bg-gray-700"
                           : ""
-                      }`}
+                        }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-                      
+
                       <IoTrophyOutline className="text-xl" /> Favorites
                     </Link>
                     <div
