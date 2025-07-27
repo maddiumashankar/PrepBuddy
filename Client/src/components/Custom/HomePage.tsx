@@ -520,7 +520,7 @@ const toggleFavorite = (company: string) => {
                 </div>
 
                 <div
-                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center"
+                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center" onClick={() => navigate('/technical-questions')} 
                 >
                   <h3 className="text-xl font-semibold text-white mb-2">
                     Technical Questions 💻
