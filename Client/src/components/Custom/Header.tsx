@@ -190,7 +190,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
           )}
         </div>
       ) : (
-        <header className="bg-black shadow-md w-full">
+        <header className=" shadow-md w-full">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <Link to="/homepage" className="flex items-center">
               <h1 className="boxy text-2xl font-bold text-white flex items-center justify-center gap-1"> {/* Changed text-black to text-white for visibility on black header */}
@@ -202,7 +202,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
             <div className="relative">
               <button
                 onClick={toggleDropdown}
-                className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-md transition cursor-pointer text-white" // Added text-white for button text
+                className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-full transition cursor-pointer text-white" // Added text-white for button text
               >
                 {!profilePic ? (
                   <div className="flex items-center space-x-2">
