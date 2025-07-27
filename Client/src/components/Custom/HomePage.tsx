@@ -84,6 +84,7 @@ const toggleFavorite = (company: string) => {
 };
   
   useEffect(() => {
+    if (!userID) return; 
     const fetchData = async () => {
       try {
         const response = await axios.get(

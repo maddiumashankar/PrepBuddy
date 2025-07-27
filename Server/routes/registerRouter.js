@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userModel = require("../models/userModel");
+const testModel = require("../models/testModel");
 
 router.get("/", (req, res) => {
   res.send("Register page1");
@@ -89,6 +90,22 @@ router.post("/changeProfilePic/:id", async (req, res) => {
     return res.status(400).send("User not found");
   }
   res.send(user);
+});
+
+router.delete("/deleteAccount/:id", async (req, res) => {
+  try {
+    // Delete all tests for this user
+    await testModel.deleteMany({ userid: req.params.id });
+    // Delete the user
+    const user = await userModel.findByIdAndDelete(req.params.id);
+    if (!user) {
+      return res.status(404).send("User not found");
+    }
+    res.send({ message: "Account and all related data deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting account:", error);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 module.exports = router;

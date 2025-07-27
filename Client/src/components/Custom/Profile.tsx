@@ -12,6 +12,7 @@ import axios from "axios";
 import { FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
+import React from "react";
 
 interface HeaderProps {
   userID: string;
@@ -61,6 +62,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
   const [confirmation2, setConfirmation2] = useState(false);
   const [newName, setNewName] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -165,6 +167,27 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    setLoading(true);
+    try {
+      console.log("Deleting account for userID:", userID);
+      await axios.delete(
+        `${import.meta.env.VITE_API_BASE_URL}/register/deleteAccount/${userID}`,
+        {
+          withCredentials: true,
+          timeout: 30000, // 30 seconds
+        }
+      );
+      navigate("/landing");
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error("Status:", error.response?.status);
+        console.error("Response:", error.response?.data);
+      }
+      setLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <>
@@ -261,6 +284,34 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
       </div>
     );
   }
+  if (deleteConfirmation) {
+    return (
+      <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
+        <div className="bg-gray-800 rounded-2xl shadow-lg p-8 text-white w-[90%] max-w-md text-center flex flex-col gap-6">
+          <h1 className="text-2xl font-bold mb-2 text-red-400">Delete Account</h1>
+          <p className="mb-4">
+            Are you sure you want to{" "}
+            <span className="text-red-400 font-semibold">delete your account</span>?<br />
+            This action is <span className="font-bold">irreversible</span> and will remove all your data.
+          </p>
+          <div className="flex justify-center gap-8">
+            <button
+              onClick={() => setDeleteConfirmation(false)}
+              className="bg-gray-600 hover:bg-gray-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleDeleteAccount}
+              className="bg-red-600 hover:bg-red-700 px-5 py-2 rounded-lg cursor-pointer font-medium transition"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-900 text-white w-full">
       <main className="container mx-auto px-4 py-8">
@@ -330,7 +381,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 flex flex-col gap-8">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
                   <CardTitle>Recent Tests</CardTitle>
@@ -341,9 +392,9 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                 {userProfileData.recentTests.length > 0 ? (
                   <CardContent>
                     <div className="space-y-4">
-                      {userProfileData.recentTests.map((test) => (
+                      {userProfileData.recentTests.map((test, index) => (
                         <div
-                          key={test.id}
+                          key={index}
                           className="bg-gray-700 rounded-lg p-4 flex justify-between items-center"
                         >
                           <div>
@@ -395,6 +446,30 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                   </Link>
                 </CardFooter>
               </Card>
+
+              {/* --- Delete Account Card --- */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-red-400">Delete Account</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Permanently remove your account and all data.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-col items-center gap-4">
+                    <p className="text-center text-gray-300">
+                      This action is{" "}
+                      <span className="font-bold text-red-400">irreversible</span>. All your data will be deleted.
+                    </p>
+                    <button
+                      onClick={() => setDeleteConfirmation(true)}
+                      className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition shadow-md cursor-pointer"
+                    >
+                      Delete Account
+                    </button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             <div>
@@ -408,12 +483,11 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                 <CardContent>
                   <div className="space-y-3">
                     {userProfileData.badges.map((badge) => (
-                      <>
+                      <React.Fragment key={badge.id}>
                         <p className="text-xs text-center text-gray-400">
                           {badge.description}
                         </p>
                         <div
-                          key={badge.id}
                           className="bg-gray-700 rounded-lg p-3 flex items-center gap-3 relative overflow-hidden"
                         >
                           <div className="h-12 w-12 rounded-full flex items-center justify-center ">
@@ -435,7 +509,7 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                             </div>
                           )}
                         </div>
-                      </>
+                      </React.Fragment>
                     ))}
                   </div>
                 </CardContent>
