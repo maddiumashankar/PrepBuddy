@@ -12,6 +12,7 @@ import ScoreBoard from "./components/Custom/ScoreBoard";
 import FavoritesPage from "./components/Custom/FavoritesPage";
 import Notes from "./components/Custom/Notes";
 import TechnicalQuestionsPage from "./components/Custom/TechnicalQuestionsPage";
+import TopicPracticePage from "./components/Custom/TopicPracticePage";
 
 function App() {
   const [userID, setUserId] = useState("");
@@ -27,7 +28,11 @@ function App() {
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
         <Route path="/score-board" element={<ScoreBoard />} />
         <Route path="/favorites" element={<FavoritesPage userID={userID} />} />
-      <Route path="/technical-questions" element={<TechnicalQuestionsPage />} /> {/* 2. Add this new route */}
+        <Route
+          path="/technical-questions"
+          element={<TechnicalQuestionsPage />}
+        />
+        <Route path="/practice/:topicName" element={<TopicPracticePage />} />
       </Routes>
       <Footer />
     </div>
