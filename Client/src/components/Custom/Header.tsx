@@ -11,7 +11,8 @@ import { TiHomeOutline } from "react-icons/ti";
 import { FaRegStickyNote } from "react-icons/fa";
 import { IoTrophyOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
-import { MdHistoryEdu } from "react-icons/md"; 
+import { MdHistoryEdu } from "react-icons/md";
+import ThemeToggle from "./ThemeToggle";
 
 interface HeaderProps {
   setUserID: React.Dispatch<React.SetStateAction<string>>;
@@ -90,7 +91,9 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
   if (loading) {
     return (
       <>
-        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50"> {/* Increased z-index to ensure it's on top */}
+        <div className="flex absolute top-0 justify-center items-center h-screen bg-gray-900 w-full z-50">
+          {" "}
+          {/* Increased z-index to ensure it's on top */}
           <div className="flex flex-col items-center">
             <div className="w-16 h-16 border-4 border-transparent border-t-blue-500 border-b-blue-500 rounded-full animate-spin"></div>
             <p className="text-white mt-4 text-lg font-semibold">Loading...</p>
@@ -152,6 +155,8 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
 
             {/* Desktop navigation */}
             <nav className="boxy hidden md:flex space-x-8 items-center font-bold">
+              {/* Theme Toggle */}
+              <ThemeToggle />
               <a
                 href="#features"
                 className=" text-white hover:text-indigo-600 transition duration-300"
@@ -171,6 +176,8 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
           {isMobileMenuOpen && (
             <div className="md:hidden bg-white/5 dark:bg-black/5 backdrop-blur-md pb-4">
               <nav className="flex flex-col items-center space-y-4 font-bold">
+                {/* Theme Toggle */}
+                <ThemeToggle />
                 <a
                   href="#features"
                   className="text-white hover:text-indigo-600 transition duration-300 w-full text-center py-2"
@@ -193,7 +200,9 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
         <header className=" shadow-md w-full">
           <div className="container mx-auto px-4 py-3 flex justify-between items-center">
             <Link to="/homepage" className="flex items-center">
-              <h1 className="boxy text-2xl font-bold text-white flex items-center justify-center gap-1"> {/* Changed text-black to text-white for visibility on black header */}
+              <h1 className="boxy text-2xl font-bold text-white flex items-center justify-center gap-1">
+                {" "}
+                {/* Changed text-black to text-white for visibility on black header */}
                 <img src="icon.png" alt="icon" width={35} />
                 <img src="logo.png" alt="logo" width={150} />
               </h1>
@@ -207,7 +216,8 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
                 {!profilePic ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-gray-500 rounded-full animate-pulse"></div>
-                    <span className="w-20 h-4 bg-gray-500 rounded-md animate-pulse hidden sm:inline-block"></span> {/* Hide on very small screens */}
+                    <span className="w-20 h-4 bg-gray-500 rounded-md animate-pulse hidden sm:inline-block"></span>{" "}
+                    {/* Hide on very small screens */}
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2">
@@ -219,14 +229,18 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
                         (e.currentTarget.src = "default-profile.jpg")
                       }
                     />
-                    <span className="max-[430px]:hidden sm:inline-block text-white">{user}</span> {/* Ensures user name is white and responsive */}
+                    <span className="max-[430px]:hidden sm:inline-block text-white">
+                      {user}
+                    </span>{" "}
+                    {/* Ensures user name is white and responsive */}
                   </div>
                 )}
 
                 <svg
-                  className={`h-4 w-4 transition-transform text-white ${ // Added text-white for icon
+                  className={`h-4 w-4 transition-transform text-white ${
+                    // Added text-white for icon
                     isDropdownOpen ? "rotate-180" : ""
-                    }`}
+                  }`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -241,12 +255,15 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 text-white"> {/* Added text-white */}
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 text-white">
+                  {" "}
+                  {/* Added text-white */}
                   <div className="py-1">
                     <Link
                       to="/profile"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/profile" ? "bg-gray-700" : ""
-                        }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/profile" ? "bg-gray-700" : ""
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
                       <CgProfile className="text-xl" /> My Profile
@@ -254,8 +271,9 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
 
                     <Link
                       to="/homepage"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/homepage" ? "bg-gray-700" : ""
-                        }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/homepage" ? "bg-gray-700" : ""
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
                       <TiHomeOutline className="text-xl" /> Homepage
@@ -263,44 +281,43 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
 
                     <Link
                       to="/notes"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/notes" ? "bg-gray-700" : ""
-                        }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/notes" ? "bg-gray-700" : ""
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
                       <FaRegStickyNote className="text-xl" /> Notes
                     </Link>
 
-
                     <Link
                       to="/previous-tests"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/previous-tests"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/previous-tests"
                           ? "bg-gray-700"
                           : ""
-                        }`}
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-                      <MdHistoryEdu  className="text-xl" /> Previous Tests
+                      <MdHistoryEdu className="text-xl" /> Previous Tests
                     </Link>
                     <Link
                       to="/score-board"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/score-board"
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/score-board"
                           ? "bg-gray-700"
                           : ""
-                        }`}
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-
                       <IoTrophyOutline className="text-xl" /> Leader Board
                     </Link>
                     <Link
                       to="/favorites"
-                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${location.pathname === "/favorites"
-                          ? "bg-gray-700"
-                          : ""
-                        }`}
+                      className={`flex px-4 py-2 text-sm hover:bg-gray-700 gap-1 items-center ${
+                        location.pathname === "/favorites" ? "bg-gray-700" : ""
+                      }`}
                       onClick={() => setIsDropdownOpen(false)} // Close dropdown on link click
                     >
-
                       <IoTrophyOutline className="text-xl" /> Favorites
                     </Link>
                     <div
