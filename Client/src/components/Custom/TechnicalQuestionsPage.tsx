@@ -7,6 +7,7 @@ import {
   Database,
   Shuffle,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const ComingSoonButton = ({ children }: { children: React.ReactNode }) => (
   <div className="relative group">
@@ -36,6 +37,21 @@ const ComingSoonButton = ({ children }: { children: React.ReactNode }) => (
       ></div>
     </div>
   </div>
+);
+
+const PracticeButton = ({
+  children,
+  to,
+}: {
+  children: React.ReactNode;
+  to: string;
+}) => (
+  <Link
+    to={to}
+    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center justify-center gap-2"
+  >
+    {children}
+  </Link>
 );
 
 const PracticeCard = ({
@@ -68,10 +84,22 @@ const PracticeCard = ({
 
 const TechnicalQuestions: React.FC = () => {
   const topics = [
-    { name: "Data Structures", icon: <BookCopy size={18} /> },
-    { name: "Algorithms", icon: <BrainCircuit size={18} /> },
-    { name: "Operating Systems", icon: <ListChecks size={18} /> },
-    { name: "DBMS", icon: <Database size={18} /> },
+    {
+      name: "Data Structures & Algorithms",
+      icon: <BookCopy size={18} />,
+      slug: "data-structures-algorithms",
+    },
+    {
+      name: "Operating Systems",
+      icon: <BrainCircuit size={18} />,
+      slug: "operating-systems",
+    },
+    {
+      name: "Computer Networks",
+      icon: <ListChecks size={18} />,
+      slug: "computer-networks",
+    },
+    { name: "DataBase Management System", icon: <Database size={18} />, slug: "dbms" },
   ];
 
   return (
@@ -101,10 +129,10 @@ const TechnicalQuestions: React.FC = () => {
           >
             <div className="grid grid-cols-2 gap-4">
               {topics.map((topic) => (
-                <ComingSoonButton key={topic.name}>
+                <PracticeButton key={topic.name} to={`/practice/${topic.slug}`}>
                   {topic.icon}
                   <span>{topic.name}</span>
-                </ComingSoonButton>
+                </PracticeButton>
               ))}
             </div>
           </PracticeCard>
