@@ -13,6 +13,7 @@ import FavoritesPage from "./components/Custom/FavoritesPage";
 import Notes from "./components/Custom/Notes";
 import TechnicalQuestionsPage from "./components/Custom/TechnicalQuestionsPage";
 import TopicPracticePage from "./components/Custom/TopicPracticePage";
+import OnTopBar from "./components/Custom/OnTopBar";
 
 function App() {
   const [userID, setUserId] = useState("");
@@ -34,6 +35,7 @@ function App() {
         />
         <Route path="/practice/:topicName" element={<TopicPracticePage />} />
       </Routes>
+      <OnTopBar />
       <Footer />
     </div>
   );
