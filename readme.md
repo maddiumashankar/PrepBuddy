@@ -63,5 +63,10 @@ We ❤️ open source. Feel free to contribute and make PrepBuddy even better!
 
 We'll review your PR soon!
 
+# Thanks to fellow Contributors
+
+<a href="https://github.com/SurajSG23/PrepBuddy/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=SurajSG23/PrepBuddy" />
+</a>
 
 
