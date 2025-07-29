@@ -16,7 +16,7 @@ const onTopbtn = () => {
   // Define the scroll event handler function *****
   const handleScroll = () => {
     document.querySelector(".on-top-bar") as HTMLElement;
-    if (window.scrollY > 50) {
+    if (window.scrollY > 100) {
        setIsVisible(true);
     } else {
         setIsVisible(false);
