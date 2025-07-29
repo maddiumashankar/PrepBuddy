@@ -103,7 +103,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
 
       fetchData();
     }
-  }, [email, navigate, setUserID]); // Keep dependencies
+  }, [email, navigate, setUserID]); // Added setUserID to dependencies
 
   if (loading) {
     return (
