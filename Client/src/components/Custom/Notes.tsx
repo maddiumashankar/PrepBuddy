@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Eye, Download, X } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Eye, Download, X, Search } from "lucide-react";
 
 const notesData = [
   {
@@ -77,6 +77,7 @@ const notesData = [
 ];
 
 const Notes = () => {
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -85,101 +86,119 @@ const Notes = () => {
     setIsLoading(true);
     setSelectedPdf(pdfLink);
     setSelectedTitle(title);
-    //prevent background scrolling when modal is open
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   };
 
   const handleClosePreview = () => {
     setSelectedPdf(null);
     setSelectedTitle("");
     setIsLoading(false);
-    //restore background scrolling
-    document.body.style.overflow = 'unset';
+    document.body.style.overflow = "unset";
   };
 
   const handleIframeLoad = () => {
-    //delay for object element
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 200);
+    setTimeout(() => setIsLoading(false), 200);
   };
 
-  // Cleanup on component unmount or when modal closes
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && selectedPdf) {
+      if (e.key === "Escape" && selectedPdf) {
         handleClosePreview();
       }
     };
 
     if (selectedPdf) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      //restore scrolling when component unmounts
-      document.body.style.overflow = 'unset';
+      document.removeEventListener("keydown", handleEscape);
+      document.body.style.overflow = "unset";
     };
   }, [selectedPdf]);
 
+  // Filter notes based on search term
+  const filteredNotes = useMemo(() => {
+    return notesData.filter((note) =>
+      note.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [searchTerm]);
+
   return (
     <div className="w-full min-h-screen px-4 py-10 bg-gray-900 text-white">
-      <h2 className="text-4xl font-bold text-center text-indigo-400 mb-10">
+      <h2 className="text-4xl font-bold text-center text-indigo-400 mb-6">
         📚 Download Notes
       </h2>
 
+      {/* Search Input */}
+      <div className="max-w-md mx-auto mb-8">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search notes..."
+            className="w-full bg-gray-800 text-white border border-gray-600 rounded-md py-2 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+        </div>
+      </div>
+
+      {/* Notes Grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {notesData.map((note, index) => (
-          <div
-            key={index}
-            className="bg-gray-800 border border-gray-700 rounded-xl p-5 hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-center"
-          >
-            <img
-              src={note.image}
-              alt={`${note.title} Icon`}
-              className="w-20 h-20 mx-auto mb-4 object-contain"
-            />
-            <h3 className="text-xl font-semibold mb-1">{note.title}</h3>
-            <p className="text-sm text-gray-300 mb-4">PDF Notes Available</p>
-            
-            <div className="flex flex-col sm:flex-row gap-2 justify-center">
-              <button
-                onClick={() => handlePreview(note.link, note.title)}
-                className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition text-sm"
-                title="Preview PDF"
-              >
-                <Eye size={16} />
-                Preview
-              </button>
-              
-              <a
-                href={note.link}
-                download={note.filename}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-3 py-2 rounded-md hover:bg-indigo-700 transition text-sm"
-                title="Download PDF"
-              >
-                <Download size={16} />
-                Download
-              </a>
+        {filteredNotes.length > 0 ? (
+          filteredNotes.map((note, index) => (
+            <div
+              key={index}
+              className="bg-gray-800 border border-gray-700 rounded-xl p-5 hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-center"
+            >
+              <img
+                src={note.image}
+                alt={`${note.title} Icon`}
+                className="w-20 h-20 mx-auto mb-4 object-contain"
+              />
+              <h3 className="text-xl font-semibold mb-1">{note.title}</h3>
+              <p className="text-sm text-gray-300 mb-4">PDF Notes Available</p>
+
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <button
+                  onClick={() => handlePreview(note.link, note.title)}
+                  className="flex items-center justify-center gap-2 bg-blue-600 text-white px-3 py-2 rounded-md hover:bg-blue-700 transition text-sm"
+                  title="Preview PDF"
+                >
+                  <Eye size={16} />
+                  Preview
+                </button>
+
+                <a
+                  href={note.link}
+                  download={note.filename}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 bg-indigo-600 text-white px-3 py-2 rounded-md hover:bg-indigo-700 transition text-sm"
+                  title="Download PDF"
+                >
+                  <Download size={16} />
+                  Download
+                </a>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center text-gray-400 col-span-full">No notes found.</p>
+        )}
       </div>
 
       {/* PDF Preview Modal */}
       {selectedPdf && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 p-4"
           onClick={handleClosePreview}
         >
-          <div 
+          <div
             className="bg-gray-800 rounded-lg w-full max-w-6xl h-full max-h-[90vh] flex flex-col"
-            onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
             <div className="flex justify-between items-center p-4 border-b border-gray-700">
               <h3 className="text-xl font-semibold text-white">
                 {selectedTitle} - Preview
@@ -192,8 +211,7 @@ const Notes = () => {
                 <X size={24} />
               </button>
             </div>
-            
-            {/* PDF Viewer */}
+
             <div className="flex-1 p-4 relative">
               {isLoading && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-md z-10">
@@ -213,9 +231,9 @@ const Notes = () => {
                   <p className="text-gray-400 mb-4">
                     Unable to display PDF in browser.
                   </p>
-                  <a 
-                    href={selectedPdf} 
-                    target="_blank" 
+                  <a
+                    href={selectedPdf}
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-indigo-400 hover:text-indigo-300 underline bg-gray-700 px-4 py-2 rounded-md"
                   >
@@ -224,12 +242,11 @@ const Notes = () => {
                 </div>
               </object>
             </div>
-            
-            {/* Footer with Download Button */}
+
             <div className="p-4 border-t border-gray-700 flex justify-end">
               <a
                 href={selectedPdf}
-                download={notesData.find(note => note.link === selectedPdf)?.filename}
+                download={notesData.find((note) => note.link === selectedPdf)?.filename}
                 className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition"
               >
                 <Download size={16} />
