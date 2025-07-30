@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import testModel from "../models/testModel.js";
+import userModel from "../models/userModel.js";
+
 const router = express.Router();
-const testModel = require("../models/testModel");
-const userModel = require("../models/userModel");
 
 router.get("/", (req, res) => {
   res.send("Register page1");
@@ -84,10 +85,11 @@ router.get("/gettest/:id", async (req, res) => {
   res.send(test);
 });
 router.get("/getTop3Tests/:id", async (req, res) => {
- try {
-    const topTests = await testModel.find({ userid: req.params.id })
+  try {
+    const topTests = await testModel
+      .find({ userid: req.params.id })
       .sort({ createdAt: -1 })
-      .limit(3); 
+      .limit(3);
 
     res.send(topTests);
   } catch (error) {
@@ -97,11 +99,14 @@ router.get("/getTop3Tests/:id", async (req, res) => {
 });
 
 router.get("/getAllTests/:id", async (req, res) => {
-  const test = await testModel.find({ userid: req.params.id }).sort({
-    createdAt: -1,
-  }).limit(20);
+  const test = await testModel
+    .find({ userid: req.params.id })
+    .sort({
+      createdAt: -1,
+    })
+    .limit(20);
   console.log(test);
   res.send(test);
 });
 
-module.exports = router;
+export default router;
