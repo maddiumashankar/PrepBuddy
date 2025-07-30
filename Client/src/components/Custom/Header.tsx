@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import * as React from "react";
 import { useGSAP } from "@gsap/react";
@@ -27,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
   const [email, setEmail] = useState<string>("");
   const [profilePic, setProfilePic] = useState("");
   const [loading, setLoading] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -56,6 +57,22 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
   };
 
   useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setEmail(currentUser?.email || "");
       setUserID("");
@@ -64,7 +81,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
       }
     });
     return () => unsubscribe();
-  }, [auth, navigate, setUserID]); // Added setUserID to dependencies
+  }, [navigate, setUserID]); // Added setUserID to dependencies
 
   useEffect(() => {
     setIsDropdownOpen(false);
@@ -208,7 +225,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
               </h1>
             </Link>
 
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={toggleDropdown}
                 className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-full transition cursor-pointer text-white" // Added text-white for button text
