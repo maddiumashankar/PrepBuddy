@@ -1,107 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, CheckCircle, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle, XCircle, LoaderCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// --- Mock Data ---
-// In a real application, you would fetch this data from an API.
-const questionsData: { [key: string]: any[] } = {
-  "data-structures-algorithms": [
-    {
-      question: "What is the time complexity of a binary search?",
-      options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
-      answer: "O(log n)",
-    },
-    {
-      question: "Which data structure uses LIFO (Last-In, First-Out)?",
-      options: ["Queue", "Stack", "Linked List", "Tree"],
-      answer: "Stack",
-    },
-    {
-      question: "Which algorithm is used for finding the shortest path in a weighted graph?",
-      options: ["DFS", "BFS", "Dijkstra's Algorithm", "Kruskal's Algorithm"],
-      answer: "Dijkstra's Algorithm",
-    },
-    {
-        question: "What is a greedy algorithm?",
-        options: ["An algorithm that makes the locally optimal choice at each stage.", "An algorithm that explores all possible solutions.", "An algorithm that uses randomization.", "An algorithm that divides the problem into smaller subproblems."],
-        answer: "An algorithm that makes the locally optimal choice at each stage.",
-    }
-  ],
-  "data-structures": [
-    {
-      question: "What is the time complexity of a binary search?",
-      options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
-      answer: "O(log n)",
-    },
-    {
-      question: "Which data structure uses LIFO (Last-In, First-Out)?",
-      options: ["Queue", "Stack", "Linked List", "Tree"],
-      answer: "Stack",
-    },
-  ],
-  algorithms: [
-    {
-      question: "Which algorithm is used for finding the shortest path in a weighted graph?",
-      options: ["DFS", "BFS", "Dijkstra's Algorithm", "Kruskal's Algorithm"],
-      answer: "Dijkstra's Algorithm",
-    },
-    {
-        question: "What is a greedy algorithm?",
-        options: ["An algorithm that makes the locally optimal choice at each stage.", "An algorithm that explores all possible solutions.", "An algorithm that uses randomization.", "An algorithm that divides the problem into smaller subproblems."],
-        answer: "An algorithm that makes the locally optimal choice at each stage.",
-    }
-  ],
-  "operating-systems": [
-    {
-      question: "What is a deadlock?",
-      options: [
-        "A situation where two or more processes are waiting for each other to release a resource.",
-        "A process that has finished execution but still has an entry in the process table.",
-        "A high-priority process.",
-        "A memory management scheme.",
-      ],
-      answer: "A situation where two or more processes are waiting for each other to release a resource.",
-    },
-  ],
-  dbms: [
-    {
-      question: "What does SQL stand for?",
-      options: [
-        "Structured Query Language",
-        "Simple Query Language",
-        "Standard Query Language",
-        "Sequential Query Language",
-      ],
-      answer: "Structured Query Language",
-    },
-    {
-        question: "What is normalization in the context of a database?",
-        options: ["The process of organizing columns and tables to minimize data redundancy.", "The process of creating indexes.", "The process of backing up data.", "The process of querying data."],
-        answer: "The process of organizing columns and tables to minimize data redundancy.",
-    }
-  ],
-  // NEW: Added questions for Computer Networks
-  "computer-networks": [
-    {
-      question: "Which layer of the OSI model is responsible for routing?",
-      options: ["Physical Layer", "Data Link Layer", "Network Layer", "Transport Layer"],
-      answer: "Network Layer",
-    },
-    {
-      question: "What does TCP stand for?",
-      options: ["Transmission Control Protocol", "Transfer Control Protocol", "Transport Control Protocol", "Transmission Connection Protocol"],
-      answer: "Transmission Control Protocol",
-    }
-  ],
-};
-// --- End of Mock Data ---
+interface Question {
+  question: string;
+  options: string[];
+  answer: string;
+}
 
 const TopicPracticePage: React.FC = () => {
   const { topicName } = useParams<{ topicName: string }>();
+
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [showAnswer, setShowAnswer] = useState(false);
+
+  useEffect(() => {
+    if (!topicName) return;
+
+    const fetchQuestions = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/questions/${topicName}`);
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch questions. Status: ${response.status}`
+          );
+        }
+        const data: Question[] = await response.json();
+
+        if (data.length === 0) {
+          throw new Error("No questions found for this topic.");
+        }
+
+        setQuestions(data);
+      } catch (err: any) {
+        setError(err.message || "An unknown error occurred.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, [topicName]);
 
   // Capitalize the topic name for the title
   const title = topicName
@@ -111,9 +59,33 @@ const TopicPracticePage: React.FC = () => {
         .join(" ")
     : "Practice";
 
-  const questions = topicName ? questionsData[topicName] || [] : [];
+  if (loading) {
+    return (
+      <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center">
+        <LoaderCircle size={48} className="animate-spin text-indigo-400" />
+        <p className="mt-4 text-lg">Loading Questions...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-gray-900 text-white min-h-screen p-8 flex flex-col items-center justify-center">
+        <h1 className="text-3xl font-bold text-red-500">Error</h1>
+        <p className="text-gray-400 mt-2">{error}</p>
+        <Link
+          to="/technical-questions"
+          className="mt-8 flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md"
+        >
+          <ArrowLeft size={20} />
+          Back to Topics
+        </Link>
+      </div>
+    );
+  }
+
   const currentQuestion = questions[currentQuestionIndex];
-  const isCorrect = currentQuestion && selectedOption === currentQuestion.answer;
+  const isCorrect = selectedOption === currentQuestion.answer;
 
   const handleOptionSelect = (option: string) => {
     if (showAnswer) return;
@@ -198,11 +170,17 @@ const TopicPracticePage: React.FC = () => {
                   key={option}
                   onClick={() => handleOptionSelect(option)}
                   disabled={showAnswer}
-                  className={`w-full text-left p-4 rounded-md transition-colors duration-300 flex items-center justify-between ${buttonClass} ${!showAnswer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+                  className={`w-full text-left p-4 rounded-md transition-colors duration-300 flex items-center justify-between ${buttonClass} ${
+                    !showAnswer ? "cursor-pointer" : "cursor-not-allowed"
+                  }`}
                 >
                   <span>{option}</span>
-                  {showAnswer && option === currentQuestion.answer && <CheckCircle size={20} />}
-                  {showAnswer && isSelected && !isCorrect && <XCircle size={20} />}
+                  {showAnswer && option === currentQuestion.answer && (
+                    <CheckCircle size={20} />
+                  )}
+                  {showAnswer && isSelected && !isCorrect && (
+                    <XCircle size={20} />
+                  )}
                 </button>
               );
             })}

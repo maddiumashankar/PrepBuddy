@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import userModel from "../models/userModel.js";
+import testModel from "../models/testModel.js";
+
 const router = express.Router();
-const userModel = require("../models/userModel");
-const testModel = require("../models/testModel");
 
 router.get("/", (req, res) => {
   res.send("Register page1");
@@ -38,15 +39,12 @@ router.get("/getTopTen", async (req, res) => {
 router.get("/getRank/:id", async (req, res) => {
   try {
     const allUsers = await userModel.find({}).sort({ points: -1 });
-
     const rankIndex = allUsers.findIndex(
       (user) => user._id.toString() === req.params.id
     );
-
     if (rankIndex === -1) {
       return res.status(404).send("User not found");
     }
-
     res.send({ rank: rankIndex + 1 });
   } catch (error) {
     console.error("Error getting rank:", error);
@@ -94,9 +92,7 @@ router.post("/changeProfilePic/:id", async (req, res) => {
 
 router.delete("/deleteAccount/:id", async (req, res) => {
   try {
-    // Delete all tests for this user
     await testModel.deleteMany({ userid: req.params.id });
-    // Delete the user
     const user = await userModel.findByIdAndDelete(req.params.id);
     if (!user) {
       return res.status(404).send("User not found");
@@ -108,4 +104,4 @@ router.delete("/deleteAccount/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

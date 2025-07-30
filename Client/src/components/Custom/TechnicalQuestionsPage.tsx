@@ -6,6 +6,11 @@ import {
   BrainCircuit,
   Database,
   Shuffle,
+  Cpu,
+  Coffee,
+  FileCode,
+  Paintbrush,
+  Terminal,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -48,7 +53,7 @@ const PracticeButton = ({
 }) => (
   <Link
     to={to}
-    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center justify-center gap-2"
+    className="w-full h-full bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md transition-colors duration-300 flex items-center justify-center gap-2"
   >
     {children}
   </Link>
@@ -99,7 +104,35 @@ const TechnicalQuestions: React.FC = () => {
       icon: <ListChecks size={18} />,
       slug: "computer-networks",
     },
-    { name: "DataBase Management System", icon: <Database size={18} />, slug: "dbms" },
+    {
+      name: "Database Management Systems",
+      icon: <Database size={18} />,
+      slug: "dbms",
+    },
+    {
+      name: "Computer Architecture",
+      icon: <Cpu size={18} />,
+      slug: "computer-architecture",
+    },
+    {
+      name: "Java Programming",
+      icon: <Coffee size={18} />,
+      slug: "java-programming",
+    },
+    {
+      name: "C++ Programming",
+      icon: <FileCode size={18} />,
+      slug: "cpp-programming",
+    },
+    { name: "Javascript", icon: <FileCode size={18} />, slug: "javascript" },
+    { name: "HTML", icon: <FileCode size={18} />, slug: "html" },
+    { name: "CSS", icon: <Paintbrush size={18} />, slug: "css" },
+    { name: "Python", icon: <Terminal size={18} />, slug: "python" },
+    {
+      name: "C Programming",
+      icon: <FileCode size={18} />,
+      slug: "c-programming",
+    },
   ];
 
   return (
