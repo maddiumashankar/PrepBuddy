@@ -24,7 +24,7 @@ const LandingPage: React.FC = () => {
     return () => unsubscribe();
   }, [auth, navigate]);
 
-  const handleLogin = async () => {};
+  const handleLogin = async () => { };
   const provider = new GoogleAuthProvider();
 
   useGSAP(() => {
@@ -66,10 +66,9 @@ const LandingPage: React.FC = () => {
         relative inline-flex items-center justify-center transition-colors 
         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 
         focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none 
-        ${
-          variant === "default"
-            ? "bg-indigo-600 text-white hover:bg-indigo-700"
-            : "border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
+        ${variant === "default"
+          ? "bg-indigo-600 text-white hover:bg-indigo-700"
+          : "border border-gray-300 bg-white hover:bg-gray-50 text-gray-700"
         }
         ${className}
       `}
@@ -283,18 +282,31 @@ const LandingPage: React.FC = () => {
 
           <div className="grid md:grid-cols-3 gap-10">
             {features.map((feature, index) => (
-              <div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-sm border border-black hover:shadow-md transition "
-              >
-                <div className="mb-4 p-3 rounded-full bg-indigo-100 inline-block">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                  {feature.title}
-                </h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
+              //  <div
+              //    key={index}
+              //    className="bg-white p-6 rounded-xl shadow-sm border border-black hover:shadow-md transition "
+              //  >
+              //    <div className="mb-4 p-3 rounded-full bg-indigo-100 inline-block">
+              //     {feature.icon}
+              //    </div>
+              //    <h3 className="text-xl font-semibold mb-3 text-gray-800">
+              //      {feature.title}
+              //    </h3>
+              //    <p className="text-gray-600">{feature.description}</p>
+              //  </div>
+               <div
+                 key={index}
+                 className="bg-white p-6 rounded-xl border border-white/20 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 ease-in-out transform group"
+               >
+                 <div className="mb-4 p-3 rounded-full bg-indigo-100 inline-block">
+                   {feature.icon}
+                 </div>
+                 <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-600 group-hover:text-indigo-600 transition-colors duration-300">
+                   {feature.title}
+                 </h3>
+                 <p className="text-gray-600 dark:text-gray-400">{feature.description}</p>
+               </div>
+
             ))}
           </div>
         </div>
