@@ -2,13 +2,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Download } from "lucide-react";
-
-interface HeaderProps{
-  userID: string;
-}
-
   
-const FavoritesPage: React.FC<HeaderProps> = ({userID}) => {
+const FavoritesPage = () => {
   const [view, setView] = useState<"companies" | "notes" | null>(null);
   const [favoriteCompanies, setFavoriteCompanies] = useState<string[]>([]);
   const [bookmarkedNotes, setBookmarkedNotes] = useState<any[]>([]);
