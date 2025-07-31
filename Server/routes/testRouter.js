@@ -109,4 +109,70 @@ router.get("/getAllTests/:id", async (req, res) => {
   res.send(test);
 });
 
+
+// routes/testRouter.js
+
+// Add this code at the end of the file, before module.exports
+
+router.get("/suggest/:id", async (req, res) => {
+  try {
+    const tests = await testModel.find({ userid: req.params.id }).sort({ score: 1 }).limit(5);
+
+    if (tests.length === 0) {
+      return res.send({ suggestion: "You haven't taken any tests yet! Why not start with a test from the homepage?" });
+    }
+
+    const lowestScoreTest = tests[0];
+    const averageScore = tests.reduce((acc, t) => acc + t.score, 0) / tests.length;
+
+    let suggestion = "";
+    if (averageScore >= 7) {
+      suggestion = `You're doing great with an average score of ${averageScore.toFixed(1)}/10! Why not challenge yourself with a 'Hard' difficulty test on a new topic?`;
+    } else if (lowestScoreTest.score <= 5) {
+      suggestion = `I noticed you scored ${lowestScoreTest.score}/10 on a test about '${lowestScoreTest.title}'. Perhaps you could practice more on that topic? Repetition is key!`;
+    } else {
+      suggestion = "You're making steady progress! Keep taking different tests to cover all your bases. How about trying a test on a Tier-1 company next?";
+    }
+
+    res.send({ suggestion });
+
+  } catch (error) {
+    console.error("Error fetching suggestion:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+// Add this entire block to routes/testRouter.js
+
+router.get("/suggest/:id", async (req, res) => {
+  try {
+    // Find the user's last 5 tests, sorted by lowest score first
+    const tests = await testModel.find({ userid: req.params.id }).sort({ score: 1 }).limit(5);
+
+    if (tests.length === 0) {
+      return res.send({ suggestion: "You haven't taken any tests yet! Why not start with a test for a company like Google or Microsoft from the homepage?" });
+    }
+
+    const lowestScoreTest = tests[0];
+    const averageScore = tests.reduce((acc, t) => acc + t.score, 0) / tests.length;
+
+    let suggestion = "";
+    if (averageScore >= 8) {
+      suggestion = `You're doing great with an average score of ${averageScore.toFixed(1)}/10! To challenge yourself, how about trying a 'Hard' difficulty test on a new topic?`;
+    } else if (lowestScoreTest.score <= 5) {
+      suggestion = `I noticed you scored ${lowestScoreTest.score}/10 on a test about '${lowestScoreTest.title}'. It might be a good idea to practice more on that topic. Repetition is key to mastery!`;
+    } else {
+      suggestion = "You're making solid progress! Keep broadening your skills by trying tests from different companies or focusing on a specific technical subject you want to strengthen.";
+    }
+
+    res.send({ suggestion });
+
+  } catch (error) {
+    console.error("Error fetching suggestion:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+module.exports = router;
+
 export default router;
