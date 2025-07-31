@@ -28,7 +28,7 @@ function App() {
         <Route path="/notes" element={<Notes />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
         <Route path="/score-board" element={<ScoreBoard />} />
-        <Route path="/favorites" element={<FavoritesPage userID={userID} />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route
           path="/technical-questions"
           element={<TechnicalQuestionsPage />}
