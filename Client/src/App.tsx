@@ -14,12 +14,17 @@ import Notes from "./components/Custom/Notes";
 import TechnicalQuestionsPage from "./components/Custom/TechnicalQuestionsPage";
 import TopicPracticePage from "./components/Custom/TopicPracticePage";
 import OnTopBar from "./components/Custom/OnTopBar";
+import ChatAssistant from "./components/Custom/ChatAssistant"; // Import the Chat Assistant
 
 function App() {
   const [userID, setUserId] = useState("");
+  const [isChatOpen, setIsChatOpen] = useState(false); // State to control chat visibility
+
   return (
     <div className="w-full min-h-[100vh] h-auto bg-gradient-to-r from-gray-900 to-gray-800 flex flex-col justify-between items-center text-white">
-      <Header setUserID={setUserId} />
+      {/* Pass the chat state setter to the Header */}
+      <Header setUserID={setUserId} setIsChatOpen={setIsChatOpen} />
+      
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/homepage" element={<HomePage userID={userID} />} />
@@ -28,14 +33,20 @@ function App() {
         <Route path="/notes" element={<Notes />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
         <Route path="/score-board" element={<ScoreBoard />} />
-        <Route path="/favorites" element={<FavoritesPage />} />
+        {/* Pass userID to pages that need it */}
+        <Route path="/favorites" element={<FavoritesPage userID={userID} />} />
         <Route
           path="/technical-questions"
-          element={<TechnicalQuestionsPage />}
+          element={<TechnicalQuestionsPage userID={userID} />}
         />
-        <Route path="/practice/:topicName" element={<TopicPracticePage />} />
+        <Route path="/practice/:topicName" element={<TopicPracticePage userID={userID} />} />
       </Routes>
+      
       <OnTopBar />
+
+      {/* Render ChatAssistant if user is logged in */}
+      {userID && <ChatAssistant userID={userID} isChatOpen={isChatOpen} setIsChatOpen={setIsChatOpen} />}
+
       <Footer />
     </div>
   );
