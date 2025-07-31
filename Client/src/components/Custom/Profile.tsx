@@ -13,6 +13,7 @@ import { FaLock } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { FaRegEdit } from "react-icons/fa";
 import React from "react";
+import QODStatsCard from "./QODStatsCard";
 
 interface HeaderProps {
   userID: string;
@@ -514,6 +515,8 @@ const Profile: React.FC<HeaderProps> = ({ userID }) => {
                   </div>
                 </CardContent>
               </Card>
+              
+              <QODStatsCard />
             </div>
           </div>
         </div>

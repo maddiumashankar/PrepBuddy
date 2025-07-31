@@ -13,6 +13,7 @@ import { IoTrophyOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
 import { MdHistoryEdu } from "react-icons/md";
 import ThemeToggle from "./ThemeToggle";
+import QuestionOfTheDay from "./QuestionOfTheDay";
 
 interface HeaderProps {
   setUserID: React.Dispatch<React.SetStateAction<string>>;
@@ -226,10 +227,14 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
             </Link>
 
             <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={toggleDropdown}
-                className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-full transition cursor-pointer text-white" // Added text-white for button text
-              >
+              <div className="flex items-center gap-2">
+                {/* Question of the Day Component */}
+                <QuestionOfTheDay />
+                
+                <button
+                  onClick={toggleDropdown}
+                  className="flex items-center space-x-2 bg-gray-700 hover:bg-gray-600 px-3 py-2 rounded-full transition cursor-pointer text-white" // Added text-white for button text
+                >
                 {!profilePic ? (
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 bg-gray-500 rounded-full animate-pulse"></div>
@@ -270,6 +275,7 @@ const Header: React.FC<HeaderProps> = ({ setUserID }) => {
                   />
                 </svg>
               </button>
+              </div>
 
               {isDropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 text-white">
