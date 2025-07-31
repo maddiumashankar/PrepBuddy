@@ -1,5 +1,3 @@
-import { useState, useEffect, useMemo } from "react";
-import { Eye, Download, X, Search } from "lucide-react";
 
 const notesData = [
   {
@@ -76,11 +74,45 @@ const notesData = [
   },
 ];
 
+import { useState, useEffect, useMemo } from "react";
+import { Eye, Download, X, Search, Star } from "lucide-react";
+
 const Notes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
   const [selectedTitle, setSelectedTitle] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Bookmarked notes from localStorage (which stores an array of full note objects)
+  const [favorites, setFavorites] = useState<any[]>([]);
+
+  // Load bookmarkedNotes from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("bookmarkedNotes");
+    if (saved) {
+      try {
+        setFavorites(JSON.parse(saved));
+      } catch (err) {
+        console.error("Failed to parse bookmarkedNotes", err);
+      }
+    }
+  }, []);
+
+  const isNoteBookmarked = (note: any) => {
+    return favorites.some((fav) => fav.title === note.title);
+  };
+
+  const toggleFavorite = (note: any) => {
+    let updated;
+    if (isNoteBookmarked(note)) {
+      updated = favorites.filter((fav) => fav.title !== note.title);
+    } else {
+      updated = [...favorites, note];
+    }
+    setFavorites(updated);
+    localStorage.setItem("bookmarkedNotes", JSON.stringify(updated));
+  };
+
 
   const handlePreview = (pdfLink: string, title: string) => {
     setIsLoading(true);
@@ -106,18 +138,15 @@ const Notes = () => {
         handleClosePreview();
       }
     };
-
     if (selectedPdf) {
       document.addEventListener("keydown", handleEscape);
     }
-
     return () => {
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
   }, [selectedPdf]);
 
-  // Filter notes based on search term
   const filteredNotes = useMemo(() => {
     return notesData.filter((note) =>
       note.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -130,7 +159,6 @@ const Notes = () => {
         📚 Download Notes
       </h2>
 
-      {/* Search Input */}
       <div className="max-w-md mx-auto mb-8">
         <div className="relative">
           <input
@@ -144,14 +172,32 @@ const Notes = () => {
         </div>
       </div>
 
-      {/* Notes Grid */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note, index) => (
             <div
               key={index}
-              className="bg-gray-800 border border-gray-700 rounded-xl p-5 hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-center"
+              className="bg-gray-800 border border-gray-700 rounded-xl p-5 hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 text-center relative"
             >
+              <button
+                onClick={() => toggleFavorite(note)}
+                title={
+                  isNoteBookmarked(note)
+                    ? "Remove from Favorites"
+                    : "Add to Favorites"
+                }
+                className="absolute top-3 right-3"
+              >
+                <Star
+                  size={22}
+                  className={
+                    isNoteBookmarked(note)
+                      ? "text-yellow-400 fill-yellow-400"
+                      : "text-gray-500"
+                  }
+                />
+              </button>
+
               <img
                 src={note.image}
                 alt={`${note.title} Icon`}
