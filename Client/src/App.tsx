@@ -15,6 +15,8 @@ import TechnicalQuestionsPage from "./components/Custom/TechnicalQuestionsPage";
 import TopicPracticePage from "./components/Custom/TopicPracticePage";
 import OnTopBar from "./components/Custom/OnTopBar";
 import ChatAssistant from "./components/Custom/ChatAssistant"; // Import the Chat Assistant
+import AptitudePage from "./components/Custom/AptitudePage";
+import QuizPage from "./components/Custom/QuizPage";
 
 function App() {
   const [userID, setUserId] = useState("");
@@ -33,6 +35,10 @@ function App() {
         <Route path="/notes" element={<Notes />} />
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
         <Route path="/score-board" element={<ScoreBoard />} />
+        <Route path="/aptitude" element={<AptitudePage />} />
+        <Route path="/quiz/:topic" element={<QuizPage />} />
+
+
         {/* Pass userID to pages that need it */}
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route
