@@ -58,7 +58,7 @@ app.get("/api/questions/:topicName", (req, res) => {
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://prep-buddy-test.vercel.app"],
+    origin: ["http://localhost:5173", "https://prep-buddy-test.vercel.app", "https://prep-buddy-k75f.vercel.app"],
     credentials: true,
   })
 );

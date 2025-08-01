@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../../../lib/utils";
+import { Link } from "react-router-dom";
+
 
 interface HeaderProps {
   userID: string;
@@ -66,25 +68,25 @@ const HomePage: React.FC<HeaderProps> = ({ userID }) => {
     filteredStartup.length === 0;
 
   useEffect(() => {
-  const saved = localStorage.getItem("favoriteCompanies");
-  if (saved) {
-    setFavorites(JSON.parse(saved));
-  }
-}, []);
+    const saved = localStorage.getItem("favoriteCompanies");
+    if (saved) {
+      setFavorites(JSON.parse(saved));
+    }
+  }, []);
 
-const toggleFavorite = (company: string) => {
-  let updatedFavorites;
-  if (favorites.includes(company)) {
-    updatedFavorites = favorites.filter((c) => c !== company);
-  } else {
-    updatedFavorites = [...favorites, company];
-  }
-  setFavorites(updatedFavorites);
-  localStorage.setItem("favoriteCompanies", JSON.stringify(updatedFavorites));
-};
-  
+  const toggleFavorite = (company: string) => {
+    let updatedFavorites;
+    if (favorites.includes(company)) {
+      updatedFavorites = favorites.filter((c) => c !== company);
+    } else {
+      updatedFavorites = [...favorites, company];
+    }
+    setFavorites(updatedFavorites);
+    localStorage.setItem("favoriteCompanies", JSON.stringify(updatedFavorites));
+  };
+
   useEffect(() => {
-    if (!userID) return; 
+    if (!userID) return;
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -218,31 +220,28 @@ const toggleFavorite = (company: string) => {
         <div className="mb-8">
           <div className="flex border-b border-gray-700 mb-6 justify-center">
             <button
-              className={`px-4 py-2 text-lg ${
-                testType === "predefined"
+              className={`px-4 py-2 text-lg ${testType === "predefined"
                   ? "border-b-2 border-indigo-500 text-indigo-400"
                   : "text-gray-400"
-              } cursor-pointer`}
+                } cursor-pointer`}
               onClick={() => setTestType("predefined")}
             >
               Popular Company Tests
             </button>
             <button
-              className={`px-4 py-2 text-lg ${
-                testType === "custom"
+              className={`px-4 py-2 text-lg ${testType === "custom"
                   ? "border-b-2 border-indigo-500 text-indigo-400"
                   : "text-gray-400"
-              } cursor-pointer`}
+                } cursor-pointer`}
               onClick={() => setTestType("custom")}
             >
               Create Custom Test
             </button>
             <button
-              className={`px-4 py-2 text-lg ${
-                testType === "focus"
+              className={`px-4 py-2 text-lg ${testType === "focus"
                   ? "border-b-2 border-indigo-500 text-indigo-400"
                   : "text-gray-400"
-              } cursor-pointer`}
+                } cursor-pointer`}
               onClick={() => setTestType("focus")}
             >
               Choose Your Focus Area
@@ -290,12 +289,12 @@ const toggleFavorite = (company: string) => {
                             alt={`${company} logo`}
                             width={50}
                           />
-                           <button
+                          <button
                             onClick={() => toggleFavorite(company)}
                             className="ml-2 text-yellow-400 text-2xl"
-                           title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}>
-                           
-                           {favorites.includes(company) ? "★" : "☆"}
+                            title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}>
+
+                            {favorites.includes(company) ? "★" : "☆"}
                           </button>
                         </div>
                       </div>
@@ -342,11 +341,11 @@ const toggleFavorite = (company: string) => {
                             width={50}
                           />
                           <button
-                             onClick={() => toggleFavorite(company)}
-                             className="ml-2 text-yellow-400 text-2xl"
-                             title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
-                             >
-                          {favorites.includes(company) ? "★" : "☆"}
+                            onClick={() => toggleFavorite(company)}
+                            className="ml-2 text-yellow-400 text-2xl"
+                            title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
+                          >
+                            {favorites.includes(company) ? "★" : "☆"}
                           </button>
                         </div>
                       </div>
@@ -393,12 +392,12 @@ const toggleFavorite = (company: string) => {
                             width={50}
                           />
                           <button
-                     onClick={() => toggleFavorite(company)}
-                      className="ml-2 text-yellow-400 text-2xl"
-                      title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
-                    >
-                      {favorites.includes(company) ? "★" : "☆"}
-                    </button>
+                            onClick={() => toggleFavorite(company)}
+                            className="ml-2 text-yellow-400 text-2xl"
+                            title={favorites.includes(company) ? "Remove from Favorites" : "Add to Favorites"}
+                          >
+                            {favorites.includes(company) ? "★" : "☆"}
+                          </button>
                         </div>
                       </div>
                       <p className="text-gray-300 mb-4">
@@ -426,8 +425,8 @@ const toggleFavorite = (company: string) => {
               <h2 className="text-2xl font-bold mb-6">Create Custom Test</h2>
               <form
                 onSubmit={(e) => {
-                    e.preventDefault();
-                    setConfirmation2(true);
+                  e.preventDefault();
+                  setConfirmation2(true);
                 }}
               >
                 <div className="mb-4">
@@ -508,19 +507,20 @@ const toggleFavorite = (company: string) => {
                 Select a Practice Area
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div
-                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center"
-                >
-                  <h3 className="text-xl font-semibold text-white mb-2">
-                    Aptitude Training 🧠
-                  </h3>
-                  <p className="text-gray-400">
-                    Sharpen your logical and quantitative skills.
-                  </p>
-                </div>
+                <Link to="/aptitude">
+                  <div className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center">
+                    <h3 className="text-xl font-semibold text-white mb-2">
+                      Aptitude Training 🧠
+                    </h3>
+                    <p className="text-gray-400">
+                      Sharpen your logical and quantitative skills.
+                    </p>
+                  </div>
+                </Link>
+
 
                 <div
-                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center" onClick={() => navigate('/technical-questions')} 
+                  className="bg-gray-800 p-8 rounded-lg shadow-lg hover:bg-gray-700 hover:shadow-indigo-500/30 transition-all duration-300 cursor-pointer text-center" onClick={() => navigate('/technical-questions')}
                 >
                   <h3 className="text-xl font-semibold text-white mb-2">
                     Technical Questions 💻
