@@ -34,12 +34,12 @@ function App() {
         <Route path="/previous-tests" element={<PrevTests userID={userID} />} />
         <Route path="/score-board" element={<ScoreBoard />} />
         {/* Pass userID to pages that need it */}
-        <Route path="/favorites" element={<FavoritesPage userID={userID} />} />
+        <Route path="/favorites" element={<FavoritesPage />} />
         <Route
           path="/technical-questions"
-          element={<TechnicalQuestionsPage userID={userID} />}
+          element={<TechnicalQuestionsPage />}
         />
-        <Route path="/practice/:topicName" element={<TopicPracticePage userID={userID} />} />
+        <Route path="/practice/:topicName" element={<TopicPracticePage />} />
       </Routes>
       
       <OnTopBar />
