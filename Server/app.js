@@ -9,6 +9,7 @@ import { connectDB } from "./config/db.js";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
+import { jwtAuthMiddleware } from "./middleware/jwtAuthMiddleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,7 +71,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/register", registerRouter);
-app.use("/test", testRouter);
-app.use("/upload", uploadRouter);
+app.use("/test", jwtAuthMiddleware, testRouter);
+app.use("/upload", jwtAuthMiddleware, uploadRouter);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
